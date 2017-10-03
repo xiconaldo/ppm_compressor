@@ -18,12 +18,13 @@ public:
 	Tree* findPath(const Context& context);
 	Tree* findPath(const Symbol& symbol);
 	Tree* findPath(const Context& context, const Symbol& symbol);
+	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol);
 	uint ocurrences() const;
 	uint contexts() const;
 
 private:
-	uint num_ocurrences_ = 1;
-	uint contexts_count = 0;
+	uint num_ocurrences_ = 0;
+	uint contexts_count_ = 0;
 	std::map<Symbol, Tree*, CompareSymbol> children;
 
 	Tree* addChild(const Symbol& symbol);

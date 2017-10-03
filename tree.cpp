@@ -1,4 +1,5 @@
 #include "tree.h"
+#include <iostream>	
 
 bool CompareSymbol::operator()(const Symbol& s1, const Symbol& s2) const{
 	return s1 < s2;
@@ -21,7 +22,7 @@ Tree* Tree::addPath(const Context& context){
 
 Tree* Tree::addPath(const Symbol& symbol){
     
-    contexts_count++;
+    contexts_count_++;
 
 	Tree* node = this->findChild(symbol);
 	if(!node) node = this->addChild(symbol);
@@ -66,7 +67,7 @@ Tree* Tree::findPath(const Context& context, const Symbol& symbol){
 
 Tree* Tree::addChild(const Symbol& symbol){
 
-    return children[symbol] = new Tree;
+    return (children[symbol] = new Tree);
     
 }
 
@@ -74,4 +75,24 @@ Tree* Tree::findChild(const Symbol& symbol){
 
     return children.count(symbol) ? children[symbol] : nullptr;
     
+}
+
+uint Tree::getOcurrencesFromPreviousSimblings(const Symbol& symbol){
+	
+	uint count = 0;
+	auto k = children.begin();
+	auto limit = children.lower_bound(symbol);
+
+	for( ; k != limit; k++)
+	  	count += k->second->num_ocurrences_;
+
+	return count;
+}
+
+uint Tree::ocurrences() const{
+	return num_ocurrences_;
+}
+
+uint Tree::contexts() const{
+	return contexts_count_;
 }
