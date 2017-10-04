@@ -1,6 +1,7 @@
-#include <iostream>
-#include <stdexcept>		//	std::invalid_argument()
-#include <fstream>			//	std::fstream
+#include <stdexcept>	//	std::invalid_argument()
+#include <fstream>		//	std::fstream
+#include <string>		// 	std::string
+#include <sstream> 		//	std::stirngstream
 
 #include "definitions.h"
 
@@ -9,6 +10,6 @@ private:
 	//?
 
 public:
-	virtual operatorRight(Symbol& x);
-	virtual endFile(void);
+	virtual Input& operator>>(Symbol& s) = 0;
+	virtual bool end(void) = 0;
 };

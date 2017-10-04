@@ -1,16 +1,14 @@
 #include "inputFromString.h"
 
-InputFromString::InputFromString(char *stringLine){
-	if(!str(StringLine)){
-		std::snprintf(buffer, sizeof buffer, "[Error] Unable to read '%s'%s", stringLine, " string.");
-		throw std::invalid_argument(buffer);
-	} else {
-		std::snprintf(buffer, sizeof buffer, "[OK] Read '%s'%s", stringLine, ".");
-	}
+InputFromString::InputFromString(const string& stringLine){
+	str = stringLine;
 }
 
-InputFromString::OperatorRight(Symbol& x){
-	str >> x;
+InputFromString::operator>>(Symbol& s){
+    unsigned char tmp;
+    str.read((char*)tmp, 1);
+    s = tmp;
+    return *this;
 }
 
 InputFromString::~InputFromString(void){};

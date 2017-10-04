@@ -3,10 +3,10 @@
 class InputFromString: public Input{
 public: 
 	InputFromString(char *stringLine);
-	OperatorRight(Symbol& x);
+	InputFromString& operator>>(Symbol& s);
+	bool end(void);
 	~InputFromString(void);
 
 private:
 	std::string str;
-	char buffer[256];
 };

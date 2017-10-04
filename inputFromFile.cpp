@@ -1,21 +1,26 @@
 #include "inputFromFile.h"
-
-InputFromFile::InputFromFile(const char *pathOfFile){
-	fileSource.open(pathOfFile, ios::in | ios::binary);
-	char buffer[256];
-	if(!fileSource.is_open()) {
-		std::snprintf(buffer, sizeof buffer, "[Error] Unable to open '%s'%s", pathOfFile, " file!");
-		throw std::invalid_argument(buffer);
-	} else 
-		std::snprintf(buffer, sizeof buffer, "[OK] Opened '%s'%s", pathOfFile, " file!");
+ 
+InputFromFile::InputFromFile(const string& pathOfFile){
+    std::stringstream buffer;
+ 
+    fileSource.open(pathOfFile, ios::in | ios::binary);
+    if(!fileSource.is_open()) {
+        buffer << "[Error] Unable to read " << pathOfFile << "string";
+        throw std::invalid_argument(buffer);
+    }
 }
 
-InputFromFile::OperatorRight(Symbol& x){
-	fileSource >> x;
+InputFromFile::operator>>(Symbol& s){
+    unsigned char tmp;
+    fileSource.read((char*)tmp, 1);
+    s = tmp;
+    return *this;
 }
-
-InputFromFile::EndFile(void){
-	return fileSource.eof();
+ 
+InputFromFile::end(void){
+    return fileSource.eof();
 }
-
-InputFromFile::~InputFromFile(void){};
+ 
+InputFromFile::~InputFromFile(void){
+    fileSource.close();
+};
