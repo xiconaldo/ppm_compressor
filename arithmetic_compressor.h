@@ -6,12 +6,11 @@
 class ArithmeticCompressor{
 private:
     Model* model;
-    uint K;
 
 public:
     ArithmeticCompressor(Model& model);
-    void encode(Input& input, Output& output);
-    void decode(Input& input, Output& output);
+    void encode(Buffer<Symbol>& input, Buffer<uint>& output);
+    void decode(Buffer<uint>& input, Buffer<Symbol>& output);
 };
 
 #endif // ARITHMETIC_COMPRESSOR_H 

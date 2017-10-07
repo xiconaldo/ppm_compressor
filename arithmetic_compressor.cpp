@@ -54,7 +54,7 @@ void ArithmeticCompressor::encode(Input& input, Output& output){
         }
         model->update(context, symbol);
         context.push_back(symbol);
-        if(context.size() > K) context.pop_front();
+        if(context.size() > model->k) context.pop_front();
 }
 
 void ArithmeticCompressor::decode(Input& input, Output& output){
@@ -134,6 +134,6 @@ void ArithmeticCompressor::decode(Input& input, Output& output){
         output << symbol;
         model->update(context, symbol);
         context.push_back(symbol);
-        if(context.size() > K) context.pop_front();
+        if(context.size() > model->k) context.pop_front();
     }
 }
