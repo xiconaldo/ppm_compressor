@@ -1,11 +1,12 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#include <vector>
+#include <deque>
 
 typedef unsigned int uint;
 typedef uint Symbol;
-typedef std::vector<Symbol> Context;
+typedef std::deque<Symbol> Context;
 enum {ESC = 256};
+typedef unsigned char uchar;
 
 #endif
