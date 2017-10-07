@@ -10,8 +10,8 @@ private:
 
 public:
     ArithmeticCompressor(Model& model);
-    void compressMessage(Input& input, Output& output);
-    void decompressMessage(Input& input, Output& output);
+    void encode(Input& input, Output& output);
+    void decode(Input& input, Output& output);
 };
 
 #endif // ARITHMETIC_COMPRESSOR_H 
