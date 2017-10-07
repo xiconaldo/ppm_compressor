@@ -55,19 +55,19 @@ MemoryBitBuffer::MemoryBitBuffer(const std::string& bits){
 
     for(uint i = 0; i < bits.size(); i++)
         if(bits[i] == '0')
-            operator<<(0);
+            operator<<(0x00);
         else
-            operator<<(1);
+            operator<<(0x01);
 }
 
-void MemoryBitBuffer::operator>>(uint& bit){
+void MemoryBitBuffer::operator>>(Bit& bit){
 
     if(eof()) return;
 
     if(rd_mask == 0x80)
         rd_buffer = source.front();
 
-    bit = rd_mask & rd_buffer ? 1 : 0;
+    bit = rd_mask & rd_buffer ? 0x01 : 0x00;
     
     rd_mask >>= 1;
     if(!rd_mask){
@@ -77,7 +77,7 @@ void MemoryBitBuffer::operator>>(uint& bit){
     bit_counter--;
 }
 
-void MemoryBitBuffer::operator<<(const uint bit){
+void MemoryBitBuffer::operator<<(const Bit bit){
 
     if(wr_mask == 0x80){
         wr_buffer = 0x00;

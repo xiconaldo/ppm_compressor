@@ -7,7 +7,7 @@
 class MemorySymbolBuffer : public Buffer<Symbol>{
     
 private:
-    std::deque<uchar> source;
+    std::deque<Symbol> source;
 
 public:
     MemorySymbolBuffer();
@@ -19,10 +19,10 @@ public:
     void print();
 };
 
-class MemoryBitBuffer : public Buffer<uint>{
+class MemoryBitBuffer : public Buffer<Bit>{
     
 private:
-    std::deque<uchar> source;
+    std::deque<Bit> source;
     uchar wr_buffer;
     uchar rd_buffer;
     uchar wr_mask;
@@ -32,8 +32,8 @@ private:
 public:
     MemoryBitBuffer();
     MemoryBitBuffer(const std::string& bits);
-    void operator>>(uint& bit);
-    void operator<<(const uint bit);
+    void operator>>(Bit& bit);
+    void operator<<(const Bit bit);
     bool eof();
     void reset();
     void print();
