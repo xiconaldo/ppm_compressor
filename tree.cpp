@@ -65,6 +65,13 @@ Tree* Tree::findPath(const Context& context, const Symbol& symbol){
 
 }
 
+void Tree::erasePath(const Symbol& symbol){
+
+	delete children.findPath(symbol);
+	children.erase(symbol);
+	
+}
+
 Tree* Tree::addChild(const Symbol& symbol){
 
     return (children[symbol] = new Tree);
