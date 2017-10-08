@@ -18,6 +18,7 @@ public:
 	Tree* findPath(const Context& context);
 	Tree* findPath(const Symbol& symbol);
 	Tree* findPath(const Context& context, const Symbol& symbol);
+	void erasePath(const Symbol& symbol);
 	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol);
 	uint ocurrences() const;
 	uint contexts() const;
