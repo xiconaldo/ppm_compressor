@@ -1,11 +1,12 @@
 #include "model.h"
+#include <iostream>
 
 Model::Model(){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
 }
 
-void Model::updateModel(Context& context, Symbol& symbol){
+void Model::updateModel(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
     Tree* node;
@@ -17,15 +18,15 @@ void Model::updateModel(Context& context, Symbol& symbol){
 
         if(!node){
             node = node->addPath(aux_ctx);
-            node->addPath(EOF);
+            node->addPath(ESC);
             node->addPath(symbol);
         }
         else{
-            if( !node->findPath(symbol) ) node->addPath(EOF);
+            if( !node->findPath(symbol) ) node->addPath(ESC);
             node->addPath(symbol);
         }
 
-        if( node->contexts() == 257 ) node->erasePath(EOF);
+        if( node->child_count() == 257 ) node->erasePath(ESC);
 
         if(aux_ctx.empty()) break;
         aux_ctx.pop_front();
@@ -36,10 +37,10 @@ void Model::updateModel(Context& context, Symbol& symbol){
 
 }
 
-ProbabilitiesSet Model::getSymbolProbability(Context& context, Symbol& symbol){
+ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
-    Tree* node, aux_node;
+    Tree* node, *aux_node;
     ProbabilitiesSet out;
     uint low, high, den;
     
@@ -49,6 +50,7 @@ ProbabilitiesSet Model::getSymbolProbability(Context& context, Symbol& symbol){
         node = node->findPath(aux_ctx);
 
         if(!node){
+            if( aux_ctx.empty() ) break;
             aux_ctx.pop_front();
             continue;
         }
@@ -61,8 +63,14 @@ ProbabilitiesSet Model::getSymbolProbability(Context& context, Symbol& symbol){
             break;
         }
         
-        aux_node = node->findPath(EOF);
-        low = node->getOcurrencesFromPreviousSimblings(EOF);
+        aux_node = node->findPath(ESC);
+        if(!aux_node){
+            if(aux_ctx.empty()) break;
+            aux_ctx.pop_front();
+            continue;
+        }
+
+        low = node->getOcurrencesFromPreviousSimblings(ESC);
         high = low + aux_node->ocurrences();
         den = node->contexts();
         out.push_back( {low, high, den } );
@@ -71,7 +79,28 @@ ProbabilitiesSet Model::getSymbolProbability(Context& context, Symbol& symbol){
         aux_ctx.pop_front();
     }
 
-    if( context_minus_1.count(symbol) ); // context -1
-        //symbol...
+    if( context_minus_1.count(symbol) ){ // context -1
+        low = 0;
+        for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
+            if(*k == symbol) break;
+            low++;
+        }
+        high = low + 1;
+        den = context_minus_1.size();
+        out.push_back( {low, high, den } );
+    }
+
+    return out;
+
+}
+
+Symbol Model::getSymbol(const Context& context, uint count){
+
+    Tree* node;
+    
+    node = &tree;
+    node = node->findPath(context);
+
+    return node->getSymbolOnCount(count);
 
 }

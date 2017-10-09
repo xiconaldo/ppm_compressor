@@ -1,18 +1,24 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "definitions.h"
+#include "tree.h"
+#include "probability.h"
+#include <set>
+
 class Model{
 
 private:
     uchar K;
+    uint alphabet_size;
     Tree tree;
-    std::unordered_set<Symbol> context_minus_1;
+    std::set<Symbol> context_minus_1;
 
 public:
     Model();
-    void updateModel(Context& context, Symbol& symbol);
-    ProbabilitiesSet getSymbolProbability(Context& context, Symbol& symbol);
-    Symbol getSymbol(Context& context, uint count);
+    void updateModel(const Context& context, const Symbol& symbol);
+    ProbabilitiesSet getSymbolProbability(const Context& context, const Symbol& symbol);
+    Symbol getSymbol(const Context& context, uint count);
 };
 
 #endif // MODEL_H

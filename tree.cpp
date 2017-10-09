@@ -67,7 +67,8 @@ Tree* Tree::findPath(const Context& context, const Symbol& symbol){
 
 void Tree::erasePath(const Symbol& symbol){
 	
-	delete children.findPath(symbol);
+	contexts_count_ -= children[symbol]->num_ocurrences_;
+	delete children[symbol];
 	children.erase(symbol);
 		
 }
@@ -102,4 +103,21 @@ uint Tree::ocurrences() const{
 
 uint Tree::contexts() const{
 	return contexts_count_;
+}
+
+uint Tree::child_count() const{
+	return children.size();
+}
+
+Symbol Tree::getSymbolOnCount(uint count) const{
+
+	uint aux = 0;
+
+	for( auto k = children.begin(); k != children.end(); k++){
+		aux += k->second->ocurrences();
+		if( aux > count) return k->first;
+	}
+
+	return children.rbegin()->first;
+
 }

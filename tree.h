@@ -22,6 +22,8 @@ public:
 	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol);
 	uint ocurrences() const;
 	uint contexts() const;
+	uint child_count() const;
+	Symbol getSymbolOnCount(uint count) const;
 
 private:
 	uint num_ocurrences_ = 0;
