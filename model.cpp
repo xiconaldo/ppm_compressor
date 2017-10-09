@@ -1,5 +1,4 @@
 #include "model.h"
-#include <iostream>
 
 Model::Model(){
     for(Symbol i = 0; i < 256; i++)
