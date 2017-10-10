@@ -1,5 +1,7 @@
 #include "tree.h"
 #include "model.h"
+#include "memory_buffer.h"
+#include "file_buffer.h"
 #include <iostream>
 
 int main(){
