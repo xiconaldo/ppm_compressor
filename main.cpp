@@ -8,18 +8,18 @@ int main(){
 
 	Model m;
 	ProbabilitiesSet pp;
-	std::string message = "abracadabra";
+	MemorySymbolBuffer message{"abracadabra"};
 	Context ctx;
 	Symbol sym;
 	uint siz;
 
-	for(char c : message){
-		sym = (Symbol)c;
+	while(!message.eof()){
+		message >> sym;
 		pp = m.getSymbolProbability(ctx, sym);
 		siz = pp.size();
 		for(ProbabilityRange p : pp){
 			if(--siz == 0)
-				std::cout << (ushort)sym << " ";
+				std::cout << (char)sym << " ";
 			else
 				std::cout << "ESC ";
 			std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
@@ -28,9 +28,6 @@ int main(){
 		ctx.push_back(sym);
 		if( ctx.size() > 2) ctx.pop_front();
 	}
-
-	for(uint i = 0; i <= 11; i++)
-		std::cout << i << " " << m.getSymbol( Context{ 'a' }, i ) << std::endl;
 
 	return 0;
 }
