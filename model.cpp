@@ -3,6 +3,7 @@
 Model::Model(){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
+    k = 2;
 }
 
 void Model::updateModel(const Context& context, const Symbol& symbol){
@@ -93,6 +94,26 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
 
 }
 
+ProbabilitiesSet Model::getSymbolProbability(int x, const Symbol& symbol){
+
+    ProbabilitiesSet out;
+    uint low, high, den;
+
+    if( context_minus_1.count(symbol) ){ // context -1
+        low = 0;
+        for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
+            if(*k == symbol) break;
+            low++;
+        }
+        high = low + 1;
+        den = context_minus_1.size();
+        out.push_back( {low, high, den } );
+    }
+
+    return out;
+
+}
+
 Symbol Model::getSymbol(const Context& context, uint count){
 
     Tree* node;
@@ -101,5 +122,38 @@ Symbol Model::getSymbol(const Context& context, uint count){
     node = node->findPath(context);
 
     return node->getSymbolOnCount(count);
+
+}
+
+Symbol Model::getSymbol(int x, uint count){
+
+    uint aux = 0;
+    
+    for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++){
+        aux++;
+        if( aux > count) return *k;
+    }
+
+    return *context_minus_1.rbegin();
+}
+
+uchar Model::getK() const{
+    return k;
+}
+
+uint Model::getCount(const Context& context){
+
+    Tree* node = &tree;
+
+    node = node->findPath(context);
+
+    if(node) return node->contexts();
+    else return 0;
+
+}
+
+uint Model::getCount(int x){
+    
+    return context_minus_1.size();
 
 }

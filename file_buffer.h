@@ -6,7 +6,7 @@
 #include <iostream>
 #include <ios>
 
-class FileSymbolBuffer : public Buffer<Symbol>{
+class FileSymbolBuffer : public SymbolBuffer{
     
 private:
     std::fstream source;
@@ -23,7 +23,7 @@ public:
     void print();
 };
 
-class FileBitBuffer : public Buffer<Bit>{
+class FileBitBuffer : public BitBuffer{
     
 private:
     std::fstream source;

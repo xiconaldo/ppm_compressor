@@ -5,6 +5,7 @@
 
 typedef unsigned int uint;
 typedef unsigned short ushort;
+typedef unsigned long ulong;
 typedef ushort Symbol;
 typedef std::deque<Symbol> Context;
 enum {ESC = 256};

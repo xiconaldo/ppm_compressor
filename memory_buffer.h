@@ -4,7 +4,7 @@
 #include "buffer.h"
 #include <iostream>
 
-class MemorySymbolBuffer : public Buffer<Symbol>{
+class MemorySymbolBuffer : public SymbolBuffer{
     
 private:
     std::deque<Symbol> source;
@@ -19,7 +19,7 @@ public:
     void print();
 };
 
-class MemoryBitBuffer : public Buffer<Bit>{
+class MemoryBitBuffer : public BitBuffer{
     
 private:
     std::deque<Bit> source;

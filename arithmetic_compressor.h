@@ -2,15 +2,20 @@
 #define ARITHMETIC_COMPRESSOR_H
 
 #include "definitions.h"
+#include "model.h"
+#include "memory_buffer.h"
+#include "probability.h"
+#include <bitset>
+
 
 class ArithmeticCompressor{
 private:
     Model* model;
 
 public:
-    ArithmeticCompressor(Model& model);
-    void encode(Buffer<Symbol>& input, Buffer<uint>& output);
-    void decode(Buffer<uint>& input, Buffer<Symbol>& output);
+    ArithmeticCompressor(Model* model);
+    void encode(SymbolBuffer& input, BitBuffer& output);
+    void decode(BitBuffer& input, SymbolBuffer& output);
 };
 
 #endif // ARITHMETIC_COMPRESSOR_H 
