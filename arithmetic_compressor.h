@@ -15,7 +15,7 @@ private:
 public:
     ArithmeticCompressor(Model* model);
     void encode(SymbolBuffer& input, BitBuffer& output);
-    void decode(BitBuffer& input, SymbolBuffer& output);
+    void decode(BitBuffer& input, SymbolBuffer& output, int size);
 };
 
 #endif // ARITHMETIC_COMPRESSOR_H 

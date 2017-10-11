@@ -3,7 +3,7 @@
 Model::Model(){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
-    k = 2;
+    k = 10;
 }
 
 void Model::updateModel(const Context& context, const Symbol& symbol){

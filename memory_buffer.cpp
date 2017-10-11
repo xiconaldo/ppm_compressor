@@ -44,6 +44,7 @@ MemoryBitBuffer::MemoryBitBuffer(){
     rd_buffer = 0x00;
     wr_mask = 0x80;
     rd_mask = 0x80;
+    bit_counter = 0;
 }
 
 MemoryBitBuffer::MemoryBitBuffer(const std::string& bits){
@@ -103,6 +104,7 @@ void MemoryBitBuffer::reset(){
 
 void MemoryBitBuffer::print(){
 
+    if(source.size() == 0) return;
     uint start = 0;
     uint end = source.size() - 1;
     uchar aux_mask = rd_mask;

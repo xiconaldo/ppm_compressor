@@ -8,34 +8,27 @@
 int main(){
 
 	Model m;
-	ProbabilitiesSet pp;
-    MemorySymbolBuffer message{"ab"};
-    MemoryBitBuffer output;
-	Context ctx;
-	Symbol sym;
-    uint siz;
-    
+	std::string s = "a";
+	//std::string s = "abracadabra";
+	//std::string s = "A casa de maria eh a";
+	//std::string s = "aakjskajsjqwkjqwjqjwc";
+	//std::string s = "a c";
+    MemorySymbolBuffer message{s};
+	MemoryBitBuffer output;
+	
+	message.print();
+	std::cout << std::endl;
     ArithmeticCompressor comp{&m};
-    comp.encode(message, output);
+	comp.encode(message, output);
+	
+	output.print();
+	message.reset();
+	std::cout << std::endl;
 
-    //output.print();
+	comp.decode(output, message, s.size());
+	message.print();
+	std::cout << std::endl;
 
-
-	// while(!message.eof()){
-	// 	message >> sym;
-	// 	pp = m.getSymbolProbability(ctx, sym);
-	// 	siz = pp.size();
-	// 	for(ProbabilityRange p : pp){
-	// 		if(--siz == 0)
-	// 			std::cout << (char)sym << " ";
-	// 		else
-	// 			std::cout << "ESC ";
-	// 		std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << m.getCount(ctx) << std::endl;
-	// 	}
-	// 	m.updateModel(ctx, sym);
-	// 	ctx.push_back(sym);
-	// 	if( ctx.size() > 2) ctx.pop_front();
-	// }
 
 	return 0;
 }
