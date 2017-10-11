@@ -22,13 +22,13 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
         int siz = prob.size();
         for(ProbabilityRange p : prob){
 
-            // std::cout << std::endl;
-            // if(--siz == 0)
-            //     std::cout << (char)symbol << " ";
-            // else
-            //     std::cout << "ESC ";
-            // std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
-            // std::cout << "----------------------------------------" << std::endl;
+            std::cout << "\n" << std::endl;
+            if(--siz == 0)
+                std::cout << (char)symbol << " ";
+            else
+                std::cout << "ESC ";
+            std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
+            std::cout << "----------------------------------------" << std::endl;
 
             range = high - low;
 
@@ -38,10 +38,16 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
             aux = (ulong)range * (ulong)p.low_num / (ulong)p.den;
             low =  low + (uint)( aux );
 
+            std::cout << "low:  ";
+            output.print();
+            std::cout << std::bitset<32>(low) << "\nhigh: ";
+            output.print();
+            std::cout << std::bitset<32>(high) << "\n";
+
             while(true){
                 if(high < 0x80000000U){
                     output << 0;
-                    while ( pending_bits > 0 ){
+                    while ( pending_bits ){
                         pending_bits--;
                         output << 1;
                     } 
@@ -51,7 +57,7 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
                 }
                 else if(low >= 0x80000000U){
                     output << 1;
-                    while ( pending_bits > 0 ){
+                    while ( pending_bits ){
                         output << 0;
                         pending_bits--;
                     }
@@ -59,26 +65,31 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
                     low <<= 1;
                     high |= 0x00000001U;
                 }
-                else if ( low >= 0x40000000 && high < 0xC0000000U ){
+                else if ( low >= 0x40000000U && high < 0xC0000000U ){
                     pending_bits++;
                     low <<= 1;
-                    low &= 0x7FFFFFFE;
+                    low &= 0x7FFFFFFEU;
                     high <<= 1;
-                    high |= 0x80000001;
+                    high |= 0x80000001U;
                 }
                 else{
                     break;
                 }
             }
-            output << 1;
+            output.print();
+            std::cout << std::endl;
         }
         model->updateModel(context, symbol);
         context.push_back(symbol);
         if(context.size() > model->getK()) context.pop_front();
     }
+    output << 1;
 }
 
 void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int size){
+
+    model->clearModel();
+
     uint low = 0x00000000U;
     uint high = 0xFFFFFFFFU;
     uint range;
@@ -99,11 +110,12 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
     }
 
     while(true) {
-
+        std::cerr << "k";
         aux_context = context;
 
         while(true){
-            if( (aux_count = model->getCount(aux_context)) || aux_context.empty() ) break;
+            aux_count = model->getCount(aux_context);
+            if( aux_count || aux_context.empty() ) break;
             aux_context.pop_front();
         }
 
@@ -111,12 +123,12 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
             range = high - low;
 
             if( aux_count ){
-                count = (value - low) * aux_count / range;
+                count = (ulong)(value - low) * (ulong)aux_count / (ulong)range;
                 symbol = model->getSymbol(aux_context, count);
                 prob = model->getSymbolProbability(aux_context, symbol);
             }
             else{
-                count = (value - low) * model->getCount(-1) / range;
+                count = (ulong)(value - low) * (ulong)model->getCount(-1) / (ulong)range;
                 symbol = model->getSymbol(-1, count);
                 prob = model->getSymbolProbability(-1, symbol);
             }
@@ -133,7 +145,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
                     high <<= 1;
                     high |= 1;
                     input >> bit;
-                    value <<= 1;
+                    //value <<= 1;
                     value += bit;
                 } 
                 else if ( low >= 0x40000000 && high < 0xC0000000U ) {
@@ -142,7 +154,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
                     high <<= 1;
                     high |= 0x80000001;
                     input >> bit;
-                    value <<= 1;
+                    //value <<= 1;
                     value += bit;
                 }
                 else{

@@ -24,6 +24,7 @@ public:
     uchar getK() const;
     uint getCount(const Context& context);
     uint getCount(int x);
+    void clearModel();
 };
 
 #endif // MODEL_H

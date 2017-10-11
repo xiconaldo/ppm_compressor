@@ -24,6 +24,7 @@ public:
 	uint contexts() const;
 	uint child_count() const;
 	Symbol getSymbolOnCount(uint count) const;
+	void clear();
 
 private:
 	uint num_ocurrences_ = 0;

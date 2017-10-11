@@ -117,6 +117,19 @@ Symbol Tree::getSymbolOnCount(uint count) const{
 		if( aux > count) return k->first;
 	}
 
-	return children.rbegin()->first;
+	if( !children.empty() ) return children.rbegin()->first;
+	return ESC;
 
+}
+
+void Tree::clear(){
+
+	num_ocurrences_ = 0;
+	contexts_count_ = 0;
+
+	for( auto element : children ){
+		element.second->clear();
+		delete element.second;
+	}
+	children.clear();
 }

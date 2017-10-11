@@ -8,27 +8,27 @@
 int main(){
 
 	Model m;
-	std::string s = "a";
-	//std::string s = "abracadabra";
+	//std::string s = "a";
+	std::string s = "abracadabra";
 	//std::string s = "A casa de maria eh a";
 	//std::string s = "aakjskajsjqwkjqwjqjwc";
-	//std::string s = "a c";
+	//std::string s = "a ";
     MemorySymbolBuffer message{s};
 	MemoryBitBuffer output;
 	
 	message.print();
 	std::cout << std::endl;
-    ArithmeticCompressor comp{&m};
-	comp.encode(message, output);
+
+	ArithmeticCompressor comp{&m};
 	
+	comp.encode(message, output);
 	output.print();
-	message.reset();
 	std::cout << std::endl;
 
-	comp.decode(output, message, s.size());
-	message.print();
+	// message.reset();
+	//comp.decode(output, message, s.size());
+	//message.print();
 	std::cout << std::endl;
-
 
 	return 0;
 }

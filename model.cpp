@@ -121,7 +121,8 @@ Symbol Model::getSymbol(const Context& context, uint count){
     node = &tree;
     node = node->findPath(context);
 
-    return node->getSymbolOnCount(count);
+    if(node) return node->getSymbolOnCount(count);
+    return ESC;
 
 }
 
@@ -156,4 +157,14 @@ uint Model::getCount(int x){
     
     return context_minus_1.size();
 
+}
+
+void Model::clearModel(){
+    context_minus_1.clear();
+
+    for(Symbol i = 0; i < 256; i++)
+        context_minus_1.insert(i);
+    k = 10;
+
+    tree.clear();
 }
