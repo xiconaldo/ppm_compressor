@@ -99,6 +99,11 @@ bool MemoryBitBuffer::eof(){
 }
 
 void MemoryBitBuffer::reset(){
+    wr_buffer = 0x00;
+    rd_buffer = 0x00;
+    wr_mask = 0x80;
+    rd_mask = 0x80;
+    bit_counter = 0;
     source.clear();
 }
 

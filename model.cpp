@@ -3,7 +3,7 @@
 Model::Model(){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
-    k = 10;
+    k = 2;
 }
 
 void Model::updateModel(const Context& context, const Symbol& symbol){
@@ -164,7 +164,7 @@ void Model::clearModel(){
 
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
-    k = 10;
+    k = 2;
 
     tree.clear();
 }
