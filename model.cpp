@@ -43,6 +43,7 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
     Tree* node, *aux_node;
     ProbabilitiesSet out;
     uint low, high, den;
+    std::unordered_set<Symbol> exc_set;
     
     while( true ){
         node = &tree;
@@ -73,6 +74,16 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
         low = node->getOcurrencesFromPreviousSimblings(ESC);
         high = low + aux_node->ocurrences();
         den = node->contexts();
+
+        for( auto element : exc_set )
+            if(aux_node = node->findPath(element)){
+                den -= aux_node->ocurrences();
+                low -= aux_node->ocurrences();
+                high -= aux_node->ocurrences();
+            }
+
+        node->getChildrenSet(symbol, exc_set);
+
         out.push_back( {low, high, den } );
     
         if(aux_ctx.empty()) break;

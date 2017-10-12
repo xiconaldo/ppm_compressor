@@ -4,6 +4,7 @@
 #include "definitions.h"
 #include "tree.h"
 #include "probability.h"
+#include <iostream>
 #include <set>
 
 class Model{

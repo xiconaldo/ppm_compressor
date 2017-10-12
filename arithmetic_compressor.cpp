@@ -23,13 +23,13 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 		int siz = prob.size();
 		for(ProbabilityRange p : prob){
 
-			std::cout << "\n" << std::endl;
-			if(--siz == 0)
-				std::cout << (char)symbol << " ";
-			else
-				std::cout << "ESC ";
-			std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
-			std::cout << "----------------------------------------" << std::endl;
+			// std::cout << "\n" << std::endl;
+			// if(--siz == 0)
+			// 	std::cout << (char)symbol << " ";
+			// else
+			// 	std::cout << "ESC ";
+			// std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
+			// std::cout << "----------------------------------------" << std::endl;
 
 			range = high - low;
 
@@ -39,11 +39,9 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 			aux = (ulong)range * (ulong)p.low_num / (ulong)p.den;
 			low =  low + (uint)( aux );
 
-			std::cout << "low:  ";
-			//output.print();
-			std::cout << std::bitset<32>(low) << "\nhigh: ";
-			//output.print();
-			std::cout << std::bitset<32>(high) << "\n";
+			// std::cout << "low:  ";
+			// std::cout << std::bitset<32>(low) << "\nhigh: ";
+			// std::cout << std::bitset<32>(high) << "\n";
 
 			while(true){
 				if(high < 0x80000000U){
@@ -77,8 +75,8 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 					break;
 				}
 			}
-			output.print();
-			std::cout << std::endl;
+			//output.print();
+			//std::cout << std::endl;
 		}
 		model->updateModel(context, symbol);
 		context.push_back(symbol);
@@ -121,7 +119,6 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 		while(true){
 			aux_count = model->getCount(aux_context);
 
-			std::cerr << "aux_count = " << aux_count << std::endl;
 			if( aux_count ) break;
 			if( aux_context.empty() ){
 				minus_1_flag = true;
@@ -134,47 +131,37 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 
 			range = high - low;
 
-			// std::cerr << "high: " << std::bitset<32>(high) << std::endl;
 			// std::cerr << "low:  " << std::bitset<32>(low) << std::endl;
-			// std::cerr << "rang: " << std::bitset<32>(range) << std::endl;
+			// std::cerr << "high: " << std::bitset<32>(high) << std::endl;
 			// std::cerr << "valu: " << std::bitset<32>(value) << std::endl;
-			// std::cerr << "v-l:  " << std::bitset<64>((ulong)(value - low)) << std::endl;
-			// std::cerr << "ax_c: " << std::bitset<64>((ulong)aux_count) << std::endl;
-			// std::cerr << "vla:  " << std::bitset<64>((ulong)(value - low) * (ulong)aux_count) << std::endl;
-			// std::cerr << "rang: " << std::bitset<64>((ulong)range) << std::endl;
-			// std::cerr << "vlar: " << std::bitset<64>((ulong)(value - low) * (ulong)aux_count / (ulong)range) << std::endl;
-			// std::cerr << "------------------------------" << std::endl;
 
 			if( !minus_1_flag ){
 				count = (ulong)(value - low) * (ulong)aux_count / (ulong)range;
 				symbol = model->getSymbol(aux_context, count);
-				std::cerr << "count = " << count << std::endl;
-				std::cerr << "model->getSymbol(aux_context, count) = " << symbol << std::endl;
 				prob = model->getSymbolProbability(aux_context, symbol);
-				std::cerr << "["  << prob[0].low_num << "/" << prob[0].den << ", " << prob[0].high_num << "/" << prob[0].den << ")" << std::endl;
-				std::cerr << "----------------------------------------" << std::endl << std::endl;
+
+				// std::cerr << "v-l:  " << std::bitset<64>((ulong)(value - low))<< std::endl;
+				// std::cerr << "ax_c: " << std::bitset<64>((ulong)aux_count)<< std::endl;
+				// std::cerr << "vla:  " << std::bitset<64>((ulong)(value - low) * (ulong)aux_count)<< std::endl;
+				// std::cerr << "rng:  " << std::bitset<64>((ulong)(high-low))<< std::endl;
+				
+				// std::cerr << "model->getCount(aux_context) = " << aux_count << std::endl;
+				// std::cerr << "count = " << count << std::endl;
+				// std::cerr << "model->getSymbol(aux_context, count) = " << symbol << std::endl;
+				// std::cerr << "["  << prob[0].low_num << "/" << prob[0].den << ", " << prob[0].high_num << "/" << prob[0].den << ")" << std::endl;
+				// std::cerr << "----------------------------------------" << std::endl;
 			}
 			else{
-				std::cerr << "low:  " << std::bitset<32>(low) << std::endl;
-				std::cerr << "high: " << std::bitset<32>(high) << std::endl;
-				std::cerr << "rang: " << std::bitset<32>(range) << std::endl;
-				std::cerr << "valu: " << std::bitset<32>(value) << std::endl;
-				std::cerr << "v-l:  " << std::bitset<64>((ulong)(value - low)) << std::endl;
-				std::cerr << "ax_c: " << std::bitset<64>((ulong)model->getCount(-1)) << std::endl;
-				std::cerr << "vla:  " << std::bitset<64>((ulong)(value - low) * (ulong)model->getCount(-1)) << std::endl;
-				std::cerr << "rang: " << std::bitset<64>((ulong)range) << std::endl;
-				std::cerr << "vlar: " << std::bitset<64>((ulong)(value - low) * (ulong)model->getCount(-1) / (ulong)range) << std::endl;
-				std::cerr << "------------------------------" << std::endl;
-
 				count = (ulong)(value - low) * (ulong)model->getCount(-1) / (ulong)range;
-				std::cerr << "model->getCount(-1) = " << model->getCount(-1) << std::endl;
 				symbol = model->getSymbol(-1, count);
-				std::cerr << "count = " << count << std::endl;
-				std::cerr << "model->getSymbol(-1, count) = " << symbol << std::endl;
 				prob = model->getSymbolProbability(-1, symbol);
-				std::cerr << "["  << prob[0].low_num << "/" << prob[0].den << ", " << prob[0].high_num << "/" << prob[0].den << ")" << std::endl;
-				std::cerr << "----------------------------------------" << std::endl << std::endl;
 				minus_1_flag = false;
+
+				// std::cerr << "model->getCount(-1) = " << model->getCount(-1) << std::endl;
+				// std::cerr << "count = " << count << std::endl;
+				// std::cerr << "model->getSymbol(-1, count) = " << symbol << std::endl;
+				// std::cerr << "["  << prob[0].low_num << "/" << prob[0].den << ", " << prob[0].high_num << "/" << prob[0].den << ")" << std::endl;
+				// std::cerr << "----------------------------------------" << std::endl;
 			}
 
 			auto p = prob[0];
@@ -185,35 +172,39 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 			low =  low + (uint)( aux );
 			
 
-			std::cerr << "low:  " << std::bitset<32>(low) << std::endl;
-			std::cerr << "high: " << std::bitset<32>(high) << std::endl;
-			std::cerr << "----------------------------------------" << std::endl << std::endl;
+			// std::cerr << "low:  " << std::bitset<32>(low) << std::endl;
+			// std::cerr << "high: " << std::bitset<32>(high) << std::endl;
+			// std::cerr << "----------------------------------------" << std::endl << std::endl;
 
 			while(true) {
 				if ( low >= 0x80000000U || high < 0x80000000U ) {
 					low <<= 1;
 					high <<= 1;
 					high |= 1;
+					
 					value <<= 1;
 
 					if(!input.eof()){
 						input >> bit;
 						value += bit;
 					}
-					std::cerr << "A";
 				} 
 				else if ( low >= 0x40000000U && high < 0xC0000000U ) {
 					low <<= 1;
 					low &= 0x7FFFFFFFU;
 					high <<= 1;
 					high |= 0x80000001U;
+
+					uint new_v = value & 0x80000000U;
 					value <<= 1;
+
+					if(new_v)	value |= 0x80000000U;
+					else value &= 0x7FFFFFFFU;
 
 					if(!input.eof()){
 						input >> bit;
 						value += bit;
 					}
-					std::cerr << "B";
 				}
 				else{
 					break;

@@ -3,6 +3,7 @@
 
 #include "definitions.h"
 #include <map>
+#include <unordered_set>
 
 class CompareSymbol{
 public:
@@ -25,6 +26,7 @@ public:
 	uint child_count() const;
 	Symbol getSymbolOnCount(uint count) const;
 	void clear();
+	void getChildrenSet(const Symbol& symbol, std::unordered_set<Symbol>& exc_set);
 
 private:
 	uint num_ocurrences_ = 0;

@@ -133,3 +133,9 @@ void Tree::clear(){
 	}
 	children.clear();
 }
+
+void Tree::getChildrenSet(const Symbol& symbol, std::unordered_set<Symbol>& exc_set){
+	for(auto it = children.begin(); it != children.end(); it++){
+		if(it->first != symbol && it->first != ESC) exc_set.insert(it->first);
+	}
+  }

@@ -9,10 +9,12 @@ int main(){
 
 	Model m;
 	//std::string s = "a";
-	//std::string s = "abracadabra";
+	std::string s = "abracadabra";
 	//std::string s = "A casa de maria eh a";
 	//std::string s = "aakjskajsjqwkjqwjqjwc";
-	std::string s = "a c";
+	//std::string s = "a-b-a";
+	//std::string s = "abrac";
+	//std::string s = "Rosas sao vermelhas, violetas sao azuis, comprimir esta merda eh um saco";	
     MemorySymbolBuffer message{s};
 	MemoryBitBuffer output;
 	
