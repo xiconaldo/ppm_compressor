@@ -14,6 +14,7 @@ private:
     uint alphabet_size;
     Tree tree;
     std::set<Symbol> context_minus_1;
+    std::unordered_set<Symbol> exc_mec;    
 
 public:
     Model();
@@ -26,6 +27,9 @@ public:
     uint getCount(const Context& context);
     uint getCount(int x);
     void clearModel();
+    ProbabilityRange getSingleProbability(const Context& context, const Symbol& symbol);
+    ProbabilityRange getSingleProbability(int x, const Symbol& symbol);
+    void printExc();
 };
 
 #endif // MODEL_H

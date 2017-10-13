@@ -24,9 +24,9 @@ public:
 	uint ocurrences() const;
 	uint contexts() const;
 	uint child_count() const;
-	Symbol getSymbolOnCount(uint count) const;
+	Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol> exc_mec) const;
 	void clear();
-	void getChildrenSet(const Symbol& symbol, std::unordered_set<Symbol>& exc_set);
+	void getChildrenSet(std::unordered_set<Symbol>& exc_set);
 
 private:
 	uint num_ocurrences_ = 0;

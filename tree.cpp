@@ -108,12 +108,12 @@ uint Tree::child_count() const{
 	return children.size();
 }
 
-Symbol Tree::getSymbolOnCount(uint count) const{
+Symbol Tree::getSymbolOnCount(uint count, const std::unordered_set<Symbol> exc_mec) const{
 
 	uint aux = 0;
 
 	for( auto k = children.begin(); k != children.end(); k++){
-		aux += k->second->ocurrences();
+		if( !exc_mec.count(k->first) ) aux += k->second->ocurrences();
 		if( aux > count) return k->first;
 	}
 
@@ -134,8 +134,8 @@ void Tree::clear(){
 	children.clear();
 }
 
-void Tree::getChildrenSet(const Symbol& symbol, std::unordered_set<Symbol>& exc_set){
+void Tree::getChildrenSet(std::unordered_set<Symbol>& exc_set){
 	for(auto it = children.begin(); it != children.end(); it++){
-		if(it->first != symbol && it->first != ESC) exc_set.insert(it->first);
+		if(it->first != ESC) exc_set.insert(it->first);
 	}
   }

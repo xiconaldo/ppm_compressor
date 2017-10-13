@@ -23,6 +23,14 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 		int siz = prob.size();
 		for(ProbabilityRange p : prob){
 
+			// std::cout << "\n" << std::endl;
+ 			// if(--siz == 0)
+ 			// 	std::cout << (char)symbol << " ";
+ 			// else
+ 			// 	std::cout << "ESC ";
+ 			// std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
+ 			// std::cout << "----------------------------------------" << std::endl;
+
 			range = (high - low + 1) / p.den;
 			high = low + range * p.high_num - 1;
 			low =  low + range * p.low_num;
@@ -97,7 +105,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 	Symbol symbol;
 	Context context;
 	Context aux_context;
-	ProbabilitiesSet prob;
+	ProbabilityRange prob;
 	int pending_bits = 0;
 
 	uint i = 31;
@@ -114,6 +122,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 		while(true){
 
 			while(true){
+				//model->printExc();
 				if(minus_1_flag){
 					aux_count = model->getCount(-1);
 					break;
@@ -135,18 +144,24 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 
 			if( !minus_1_flag ){
 				symbol = model->getSymbol(aux_context, count);
-				prob = model->getSymbolProbability(aux_context, symbol);
+				prob = model->getSingleProbability(aux_context, symbol);
 			}
 			else{
 				symbol = model->getSymbol(-1, count);
-				prob = model->getSymbolProbability(-1, symbol);
+				prob = model->getSingleProbability(-1, symbol);
 				minus_1_flag = false;
 			}
 
-			auto p = prob[0];
+			std::cout << "\n" << std::endl;
+			if(symbol < 256)
+				std::cout << (char)symbol << " ";
+			else
+				std::cout << "ESC ";
+			std::cout << "["  << prob.low_num << "/" << prob.den << ", " << prob.high_num << "/" << prob.den << ")" << std::endl;
+			std::cout << "----------------------------------------" << std::endl;
 
-			high =  low + range * p.high_num - 1;
-			low =  low + range * p.low_num;
+			high =  low + range * prob.high_num - 1;
+			low =  low + range * prob.low_num;
 			
 			while( low >= g_Half || high < g_Half ) {
 				if( high < g_Half){

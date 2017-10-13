@@ -39,6 +39,11 @@ void MemorySymbolBuffer::print(){
     }
 }
 
+uint MemorySymbolBuffer::size(){
+    
+    return source.size() * 8U;
+}
+
 
 //MemoryBitBuffer definitions
 
@@ -133,4 +138,8 @@ void MemoryBitBuffer::print(){
 
     }
 
+}
+
+uint MemoryBitBuffer::size(){
+    return bit_counter;
 }

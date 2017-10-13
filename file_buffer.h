@@ -21,6 +21,7 @@ public:
     bool eof();
     void reset();
     void print();
+    uint size();
 };
 
 class FileBitBuffer : public BitBuffer{
@@ -43,6 +44,7 @@ public:
     bool eof();
     void reset();
     void print();
+    uint size();
 };
 
 #endif // FILE_BUFFER_H

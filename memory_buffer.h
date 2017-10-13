@@ -17,6 +17,7 @@ public:
     bool eof();
     void reset();
     void print();
+    uint size();
 };
 
 class MemoryBitBuffer : public BitBuffer{
@@ -37,6 +38,7 @@ public:
     bool eof();
     void reset();
     void print();
+    uint size();
 };
 
 #endif // MEMORY_BUFFER_H
