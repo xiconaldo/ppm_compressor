@@ -1,9 +1,9 @@
 #include "model.h"
 
-Model::Model(){
+Model::Model(uchar k){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
-    k = 2;
+    this->k = k;
 }
 
 void Model::updateModel(const Context& context, const Symbol& symbol){
@@ -246,7 +246,6 @@ void Model::clearModel(){
 
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
-    k = 2;
 
     tree.clear();
 }

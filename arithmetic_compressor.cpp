@@ -152,13 +152,13 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 				minus_1_flag = false;
 			}
 
-			std::cout << "\n" << std::endl;
-			if(symbol < 256)
-				std::cout << (char)symbol << " ";
-			else
-				std::cout << "ESC ";
-			std::cout << "["  << prob.low_num << "/" << prob.den << ", " << prob.high_num << "/" << prob.den << ")" << std::endl;
-			std::cout << "----------------------------------------" << std::endl;
+			// std::cout << "\n" << std::endl;
+			// if(symbol < 256)
+			// 	std::cout << (char)symbol << " ";
+			// else
+			// 	std::cout << "ESC ";
+			// std::cout << "["  << prob.low_num << "/" << prob.den << ", " << prob.high_num << "/" << prob.den << ")" << std::endl;
+			// std::cout << "----------------------------------------" << std::endl;
 
 			high =  low + range * prob.high_num - 1;
 			low =  low + range * prob.low_num;

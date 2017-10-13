@@ -17,7 +17,7 @@ private:
     std::unordered_set<Symbol> exc_mec;    
 
 public:
-    Model();
+    Model(uchar k = 2);
     void updateModel(const Context& context, const Symbol& symbol);
     ProbabilitiesSet getSymbolProbability(const Context& context, const Symbol& symbol);
     ProbabilitiesSet getSymbolProbability(int x, const Symbol& symbol);

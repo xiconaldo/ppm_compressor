@@ -5,8 +5,11 @@ FileSymbolBuffer::FileSymbolBuffer(const std::string& file_name){
     if(!source.is_open()) 
         source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-    seek_p = source.tellp();
-    seek_g = 0;
+
+    source.seekg (0, source.end);
+    seek_p = source.tellg();
+    source.seekg (0, source.beg);
+    seek_g = source.tellg();
 }
 
 FileSymbolBuffer::~FileSymbolBuffer(){
@@ -16,7 +19,7 @@ FileSymbolBuffer::~FileSymbolBuffer(){
 void FileSymbolBuffer::operator>>(Symbol& symbol){
     if(eof()) return;
 
-    source.seekg(seek_g);
+    source.seekg(seek_g, source.beg);
 
     uchar readed;
     source.read((char*)&readed, 1);
@@ -27,26 +30,28 @@ void FileSymbolBuffer::operator>>(Symbol& symbol){
 
 void FileSymbolBuffer::operator<<(const Symbol symbol){
 
-    source.seekp(seek_p);
+    source.seekp(seek_p, source.beg);
 
     uchar writed = symbol;
     source.write((char*)&writed, 1);
-
     seek_p++;
 }
 
 bool FileSymbolBuffer::eof(){
-    std::cout << seek_g << " < " << seek_p << std::endl;
     return seek_g > seek_p;
 }
 
 void FileSymbolBuffer::reset(){
-    source.seekg(0);
-    source.seekp(0);
+    source.seekg(0, source.beg);
+    source.seekp(0, source.beg);
 }
 
 void FileSymbolBuffer::print(){
     std::cout << source.rdbuf();
+}
+
+uint FileSymbolBuffer::size(){
+    return (seek_p-seek_g)* 8U;
 }
 
 //
@@ -63,21 +68,33 @@ FileBitBuffer::FileBitBuffer(const std::string& file_name){
     source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
     if(!source.is_open()) 
         source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+
+    source.seekg (0, source.end);
+    seek_p = source.tellg();
+    source.seekg (0, source.beg);
+    seek_g = source.tellg();
 }
 
 FileBitBuffer::~FileBitBuffer(){
+
+    while( wr_mask != 0x80)
+        operator<<(0);
+
     source.close();
 }
 
 void FileBitBuffer::operator>>(Bit& bit){
-    if(eof()) return;
+    if(eof()){
+        bit = 0;
+        return;
+    }
 
-    source.seekg(seek_g);
+    source.seekg(seek_g, source.beg);
 
     if(rd_mask == 0x80)
         source.read((char*)&rd_buffer, 1);
 
-    bit = rd_mask & rd_buffer ? 1 : 0;
+    bit = (rd_mask & rd_buffer) ? 1 : 0;
 
     rd_mask >>= 1;
     if(!rd_mask){
@@ -88,7 +105,7 @@ void FileBitBuffer::operator>>(Bit& bit){
 
 void FileBitBuffer::operator<<(const Bit bit){
 
-    source.seekp(seek_p);
+    source.seekp(seek_p, source.beg);
 
     if(bit) wr_buffer |= wr_mask;
 
@@ -102,7 +119,7 @@ void FileBitBuffer::operator<<(const Bit bit){
 }
 
 bool FileBitBuffer::eof(){
-    return source.eof();
+    return ((seek_g == seek_p) && (rd_mask > wr_mask)) || (seek_g > seek_p);
 }
 
 void FileBitBuffer::reset(){
@@ -117,4 +134,8 @@ void FileBitBuffer::reset(){
 
 void FileBitBuffer::print(){
     std::cout << source.rdbuf();
+}
+
+uint FileBitBuffer::size(){
+    return (seek_p-seek_g)*8U;
 }
