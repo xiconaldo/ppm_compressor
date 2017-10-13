@@ -11,7 +11,10 @@ MemorySymbolBuffer::MemorySymbolBuffer(const std::string& symbols){
 }
 
 void MemorySymbolBuffer::operator>>(Symbol& symbol){
-    if( eof() ) return;
+    if( eof() ){
+        symbol = 0U;
+        return;
+    }
 
     symbol = source.front();
     source.pop_front();
@@ -63,7 +66,10 @@ MemoryBitBuffer::MemoryBitBuffer(const std::string& bits){
 
 void MemoryBitBuffer::operator>>(Bit& bit){
 
-    if(eof()) return;
+    if(eof()){
+        bit = 0;
+        return;
+    }
 
     if(rd_mask == 0x80)
         rd_buffer = source.front();

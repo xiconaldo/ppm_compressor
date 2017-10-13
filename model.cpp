@@ -75,14 +75,14 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
         high = low + aux_node->ocurrences();
         den = node->contexts();
 
-        for( auto element : exc_set )
-            if(aux_node = node->findPath(element)){
-                den -= aux_node->ocurrences();
-                low -= aux_node->ocurrences();
-                high -= aux_node->ocurrences();
-            }
+        // for( auto element : exc_set )
+        //     if(aux_node = node->findPath(element)){
+        //         den -= aux_node->ocurrences();
+        //         low -= aux_node->ocurrences();
+        //         high -= aux_node->ocurrences();
+        //     }
 
-        node->getChildrenSet(symbol, exc_set);
+        //node->getChildrenSet(symbol, exc_set);
 
         out.push_back( {low, high, den } );
     

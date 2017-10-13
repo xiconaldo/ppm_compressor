@@ -7,7 +7,7 @@ ArithmeticCompressor::ArithmeticCompressor(Model* model){
 void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 
 	uint low = 0x00000000U;
-	uint high = 0xFFFFFFFFU;
+	uint high = 0x7FFFFFFFU;
 
 	uint range;
 	ulong aux;
@@ -23,66 +23,62 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 		int siz = prob.size();
 		for(ProbabilityRange p : prob){
 
-			// std::cout << "\n" << std::endl;
-			// if(--siz == 0)
-			// 	std::cout << (char)symbol << " ";
-			// else
-			// 	std::cout << "ESC ";
-			// std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
-			// std::cout << "----------------------------------------" << std::endl;
+			range = (high - low + 1) / p.den;
+			high = low + range * p.high_num - 1;
+			low =  low + range * p.low_num;
 
-			range = high - low;
-
-			aux = (ulong)range * (ulong)p.high_num / (ulong)p.den;
-			high = low + (uint)( aux );
-			
-			aux = (ulong)range * (ulong)p.low_num / (ulong)p.den;
-			low =  low + (uint)( aux );
-
-			// std::cout << "low:  ";
-			// std::cout << std::bitset<32>(low) << "\nhigh: ";
-			// std::cout << std::bitset<32>(high) << "\n";
-
-			while(true){
-				if(high < 0x80000000U){
+			while( high < g_Half || low >= g_Half){
+				if(high < g_Half){
 					output << 0;
+					high <<= 1;
+					low <<= 1;
+					high += 1U;
+
 					while ( pending_bits ){
 						pending_bits--;
 						output << 1;
-					} 
+					}
+				}
+				else if(low >= g_Half){
+					output << 1;
+
+					high -= g_Half;
+					low -= g_Half;
 					high <<= 1;
 					low <<= 1;
-					high |= 0x00000001U;
-				}
-				else if(low >= 0x80000000U){
-					output << 1;
+					high += 1U;
+
 					while ( pending_bits ){
 						output << 0;
 						pending_bits--;
 					}
-					high <<= 1;
-					low <<= 1;
-					high |= 0x00000001U;
-				}
-				else if ( low >= 0x40000000U && high < 0xC0000000U ){
-					pending_bits++;
-					low <<= 1;
-					low &= 0x7FFFFFFEU;
-					high <<= 1;
-					high |= 0x80000001U;
-				}
-				else{
-					break;
 				}
 			}
-			//output.print();
-			//std::cout << std::endl;
+			
+			while ( low >= g_FirstQuarter && high < g_ThirdQuarter ){
+				pending_bits++;
+				high -= g_FirstQuarter;
+				low -= g_FirstQuarter;
+				low <<= 1;
+				high <<= 1;
+				high += 1U;
+			}
 		}
+
 		model->updateModel(context, symbol);
 		context.push_back(symbol);
 		if(context.size() > model->getK()) context.pop_front();
+		
 	}
-	output << 1;
+
+	if( low < g_FirstQuarter ){
+        output << 0;
+        for( int i = 0; i < pending_bits+1; i++ )
+            output << 1;
+    }
+    else {
+        output << 1;
+    }
 }
 
 void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int size){
@@ -90,125 +86,110 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 	model->clearModel();
 
 	uint low = 0x00000000U;
-	uint high = 0xFFFFFFFFU;
+	uint high = 0x7FFFFFFFU;
 	uint range;
 	uint value;
 	Bit bit;
 	bool minus_1_flag = false;
 	uint count;
 	uint aux_count;
-	ulong aux;
+
 	Symbol symbol;
 	Context context;
 	Context aux_context;
 	ProbabilitiesSet prob;
+	int pending_bits = 0;
 
-	uint i = 32;
+	uint i = 31;
 	for (; i > 0 ; i-- ) {
-		if(input.eof()) break;
 		input >> bit;
 		value <<= 1;
 		value += bit;
 	}
-	value <<= i;
 
 	while(true) {
 		aux_context = context;
 		minus_1_flag = false;
 
 		while(true){
-			aux_count = model->getCount(aux_context);
 
-			if( aux_count ) break;
-			if( aux_context.empty() ){
-				minus_1_flag = true;
-				break;
+			while(true){
+				if(minus_1_flag){
+					aux_count = model->getCount(-1);
+					break;
+				}
+
+				aux_count = model->getCount(aux_context);
+	
+				if( aux_count ) break;
+				if( aux_context.empty() ){
+					minus_1_flag = true;
+					aux_count = model->getCount(-1);
+					break;
+				}
+				aux_context.pop_front();
 			}
-			aux_context.pop_front();
-		}
 
-		while(true){
-
-			range = high - low;
-
-			// std::cerr << "low:  " << std::bitset<32>(low) << std::endl;
-			// std::cerr << "high: " << std::bitset<32>(high) << std::endl;
-			// std::cerr << "valu: " << std::bitset<32>(value) << std::endl;
+			range = (high - low + 1) / aux_count;
+			count = (value - low) / range;
 
 			if( !minus_1_flag ){
-				count = (ulong)(value - low) * (ulong)aux_count / (ulong)range;
 				symbol = model->getSymbol(aux_context, count);
 				prob = model->getSymbolProbability(aux_context, symbol);
-
-				// std::cerr << "v-l:  " << std::bitset<64>((ulong)(value - low))<< std::endl;
-				// std::cerr << "ax_c: " << std::bitset<64>((ulong)aux_count)<< std::endl;
-				// std::cerr << "vla:  " << std::bitset<64>((ulong)(value - low) * (ulong)aux_count)<< std::endl;
-				// std::cerr << "rng:  " << std::bitset<64>((ulong)(high-low))<< std::endl;
-				
-				// std::cerr << "model->getCount(aux_context) = " << aux_count << std::endl;
-				// std::cerr << "count = " << count << std::endl;
-				// std::cerr << "model->getSymbol(aux_context, count) = " << symbol << std::endl;
-				// std::cerr << "["  << prob[0].low_num << "/" << prob[0].den << ", " << prob[0].high_num << "/" << prob[0].den << ")" << std::endl;
-				// std::cerr << "----------------------------------------" << std::endl;
 			}
 			else{
-				count = (ulong)(value - low) * (ulong)model->getCount(-1) / (ulong)range;
 				symbol = model->getSymbol(-1, count);
 				prob = model->getSymbolProbability(-1, symbol);
 				minus_1_flag = false;
-
-				// std::cerr << "model->getCount(-1) = " << model->getCount(-1) << std::endl;
-				// std::cerr << "count = " << count << std::endl;
-				// std::cerr << "model->getSymbol(-1, count) = " << symbol << std::endl;
-				// std::cerr << "["  << prob[0].low_num << "/" << prob[0].den << ", " << prob[0].high_num << "/" << prob[0].den << ")" << std::endl;
-				// std::cerr << "----------------------------------------" << std::endl;
 			}
 
 			auto p = prob[0];
-			aux = (ulong)range * (ulong)p.high_num / (ulong)p.den;
-			high =  low + (uint)( aux );
 
-			aux = (ulong)range * (ulong)p.low_num / (ulong)p.den;
-			low =  low + (uint)( aux );
+			high =  low + range * p.high_num - 1;
+			low =  low + range * p.low_num;
 			
-
-			// std::cerr << "low:  " << std::bitset<32>(low) << std::endl;
-			// std::cerr << "high: " << std::bitset<32>(high) << std::endl;
-			// std::cerr << "----------------------------------------" << std::endl << std::endl;
-
-			while(true) {
-				if ( low >= 0x80000000U || high < 0x80000000U ) {
+			while( low >= g_Half || high < g_Half ) {
+				if( high < g_Half){
 					low <<= 1;
 					high <<= 1;
-					high |= 1;
+					value <<= 1;
+
+					high += 1U;
+					input >> bit;
+					value += bit;
 					
-					value <<= 1;
+				}
+				else if( low >= g_Half){
+					low -= g_Half;
+					high -= g_Half;
+					value -= g_Half;
 
-					if(!input.eof()){
-						input >> bit;
-						value += bit;
-					}
-				} 
-				else if ( low >= 0x40000000U && high < 0xC0000000U ) {
 					low <<= 1;
-					low &= 0x7FFFFFFFU;
 					high <<= 1;
-					high |= 0x80000001U;
-
-					uint new_v = value & 0x80000000U;
 					value <<= 1;
 
-					if(new_v)	value |= 0x80000000U;
-					else value &= 0x7FFFFFFFU;
+					high += 1U;
+					input >> bit;
+					value += bit;
+				}
 
-					if(!input.eof()){
-						input >> bit;
-						value += bit;
-					}
-				}
-				else{
-					break;
-				}
+				pending_bits = 0;
+			}
+
+			while( low >= g_FirstQuarter && high < g_ThirdQuarter){
+				pending_bits++;
+				low -= g_FirstQuarter;
+				high -= g_FirstQuarter;
+				value -= g_FirstQuarter;
+
+				low <<= 1;
+				high <<= 1;
+				value <<= 1;
+
+				high += 1U;
+				input >> bit;
+				value += bit;
+				
 			}
 
 			if(symbol > 255){
