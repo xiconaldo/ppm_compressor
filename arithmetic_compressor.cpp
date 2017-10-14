@@ -4,7 +4,7 @@ ArithmeticCompressor::ArithmeticCompressor(Model* model){
 	this->model = model;
 }
 
-void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
+double ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 
 	uint low = 0x00000000U;
 	uint high = 0x7FFFFFFFU;
@@ -16,29 +16,22 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 	Symbol symbol;
 	Context context;
 	ProbabilitiesSet prob;
+	double entropy = 0.0;
 
 	while( !input.eof() ){
-		if(++percent % 10000U == 0)
-			std::cerr << "\r" << std::fixed << std::setw(6) << std::setprecision(2) << percent * 100.0f / total_percent << " %";
 		input >> symbol;
 		prob = model->getSymbolProbability(context, symbol);
 		int siz = prob.size();
 		for(ProbabilityRange p : prob){
 
-			// std::cout << "\n" << std::endl;
- 			// if(--siz == 0)
- 			// 	std::cout << (char)symbol << " ";
- 			// else
- 			// 	std::cout << "ESC ";
- 			// std::cout << "["  << p.low_num << "/" << p.den << ", " << p.high_num << "/" << p.den << ")" << std::endl;
- 			// std::cout << "----------------------------------------" << std::endl;
+			entropy -= std::log2(double(p.high_num - p.low_num)/p.den);
 
 			range = (high - low + 1) / p.den;
 			high = low + range * p.high_num - 1;
 			low =  low + range * p.low_num;
 
-			while( high < g_Half || low >= g_Half){
-				if(high < g_Half){
+			while( high < ONE_HALF || low >= ONE_HALF){
+				if(high < ONE_HALF){
 					output << 0;
 					high <<= 1;
 					low <<= 1;
@@ -49,11 +42,11 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 						output << 1;
 					}
 				}
-				else if(low >= g_Half){
+				else if(low >= ONE_HALF){
 					output << 1;
 
-					high -= g_Half;
-					low -= g_Half;
+					high -= ONE_HALF;
+					low -= ONE_HALF;
 					high <<= 1;
 					low <<= 1;
 					high += 1U;
@@ -65,35 +58,41 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 				}
 			}
 			
-			while ( low >= g_FirstQuarter && high < g_ThirdQuarter ){
+			while ( low >= ONE_QUARTER && high < THREE_QUARTERS ){
 				pending_bits++;
-				high -= g_FirstQuarter;
-				low -= g_FirstQuarter;
+				high -= ONE_QUARTER;
+				low -= ONE_QUARTER;
 				low <<= 1;
 				high <<= 1;
 				high += 1U;
 			}
 		}
 
+		if(++percent % 10000U == 0 || percent == total_percent)
+			std::cerr << "\rCompressing " << std::setw(percent*59/total_percent) << std::setfill('|') << "" 
+					  << std::setw(59-percent*59/total_percent) << std::setfill(' ') << "" 
+					  << std::fixed << std::setw(7) << std::setprecision(2) 
+					  << percent * 100.0f / total_percent << " %";
 		model->updateModel(context, symbol);
 		context.push_back(symbol);
 		if(context.size() > model->getK()) context.pop_front();
 		
 	}
 
-	if( low < g_FirstQuarter ){
+	if( low < ONE_QUARTER ){
         output << 0;
         for( int i = 0; i < pending_bits+1; i++ )
             output << 1;
     }
     else {
         output << 1;
-    }
+	}
+	
+	model->clearModel();
+	return entropy/total_percent;
 }
 
 void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int size){
-
-	model->clearModel();
 
 	uint low = 0x00000000U;
 	uint high = 0x7FFFFFFFU;
@@ -126,7 +125,6 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 		while(true){
 
 			while(true){
-				//model->printExc();
 				if(minus_1_flag){
 					aux_count = model->getCount(-1);
 					break;
@@ -156,19 +154,11 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 				minus_1_flag = false;
 			}
 
-			// std::cout << "\n" << std::endl;
-			// if(symbol < 256)
-			// 	std::cout << (char)symbol << " ";
-			// else
-			// 	std::cout << "ESC ";
-			// std::cout << "["  << prob.low_num << "/" << prob.den << ", " << prob.high_num << "/" << prob.den << ")" << std::endl;
-			// std::cout << "----------------------------------------" << std::endl;
-
 			high =  low + range * prob.high_num - 1;
 			low =  low + range * prob.low_num;
 			
-			while( low >= g_Half || high < g_Half ) {
-				if( high < g_Half){
+			while( low >= ONE_HALF || high < ONE_HALF ) {
+				if( high < ONE_HALF){
 					low <<= 1;
 					high <<= 1;
 					value <<= 1;
@@ -178,10 +168,10 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 					value += bit;
 					
 				}
-				else if( low >= g_Half){
-					low -= g_Half;
-					high -= g_Half;
-					value -= g_Half;
+				else if( low >= ONE_HALF){
+					low -= ONE_HALF;
+					high -= ONE_HALF;
+					value -= ONE_HALF;
 
 					low <<= 1;
 					high <<= 1;
@@ -195,11 +185,11 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 				pending_bits = 0;
 			}
 
-			while( low >= g_FirstQuarter && high < g_ThirdQuarter){
+			while( low >= ONE_QUARTER && high < THREE_QUARTERS){
 				pending_bits++;
-				low -= g_FirstQuarter;
-				high -= g_FirstQuarter;
-				value -= g_FirstQuarter;
+				low -= ONE_QUARTER;
+				high -= ONE_QUARTER;
+				value -= ONE_QUARTER;
 
 				low <<= 1;
 				high <<= 1;
@@ -223,11 +213,16 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 		}
 		
 		output << symbol;
-		if(++percent % 10000U == 0)
-			std::cerr << "\r" << std::fixed << std::setw(6) << std::setprecision(2) << percent * 100.0f / total_percent << " %";
+		if(++percent % 10000U == 0 || percent == total_percent)
+			std::cerr << "\rDecompressing " << std::setw(percent*57/total_percent) << std::setfill('|') << "" 
+					  << std::setw(57-percent*57/total_percent) << std::setfill(' ') << "" 
+					  << std::fixed << std::setw(7) << std::setprecision(2) 
+				  	  << percent * 100.0f / total_percent << " %";
 		if(--size == 0) break;
 		model->updateModel(context, symbol);
 		context.push_back(symbol);
 		if(context.size() > model->getK()) context.pop_front();
 	}
+
+	model->clearModel();
 }

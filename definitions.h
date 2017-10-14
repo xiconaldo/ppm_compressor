@@ -11,8 +11,4 @@ enum {ESC = 256};
 typedef unsigned char uchar;
 typedef unsigned char Bit;
 
-const uint g_FirstQuarter = 0x20000000U;
-const uint g_ThirdQuarter = 0x60000000U;
-const uint g_Half         = 0x40000000U;
-
 #endif
