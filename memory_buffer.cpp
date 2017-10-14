@@ -143,3 +143,49 @@ void MemoryBitBuffer::print(){
 uint MemoryBitBuffer::size(){
     return bit_counter;
 }
+
+void MemoryBitBuffer::writeBlock( uchar byte ){
+    
+    uchar bit_select = 0x80;
+    
+    while(bit_select != 0U){
+        if(bit_select & byte) operator<<(1);
+        else operator<<(0);
+        bit_select >>= 1;
+    }
+}
+
+void MemoryBitBuffer::writeBlock( uint num ){
+    uint bit_select = 0x80000000;
+    
+    while(bit_select != 0U){
+        if(bit_select & num) operator<<(1);
+        else operator<<(0);
+        bit_select >>= 1;
+    }
+}
+
+void MemoryBitBuffer::readBlock( uchar& byte ){
+    
+    uchar bit_select = 0x80;
+    uchar bit;
+    
+    while(bit_select != 0U){
+        operator>>(bit);
+        if(bit)
+            byte |= bit_select;
+        bit_select >>= 1;
+    }
+}
+
+void MemoryBitBuffer::readBlock( uint& num ){
+    uint bit_select = 0x80000000;
+    uchar bit;
+    
+    while(bit_select != 0U){
+        operator>>(bit);
+        if(bit)
+            num |= bit_select;
+        bit_select >>= 1;
+    }
+}

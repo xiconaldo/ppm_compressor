@@ -10,14 +10,16 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output){
 	uint high = 0x7FFFFFFFU;
 
 	uint range;
-	ulong aux;
+	uint percent = 0;
+	uint total_percent = input.size()/8;
 	int pending_bits = 0;
 	Symbol symbol;
 	Context context;
 	ProbabilitiesSet prob;
 
 	while( !input.eof() ){
-
+		if(++percent % 10000U == 0)
+			std::cerr << "\r" << std::fixed << std::setw(6) << std::setprecision(2) << percent * 100.0f / total_percent << " %";
 		input >> symbol;
 		prob = model->getSymbolProbability(context, symbol);
 		int siz = prob.size();
@@ -101,6 +103,8 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 	bool minus_1_flag = false;
 	uint count;
 	uint aux_count;
+	uint total_percent = size;
+	uint percent = 0;
 
 	Symbol symbol;
 	Context context;
@@ -219,6 +223,8 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, int si
 		}
 		
 		output << symbol;
+		if(++percent % 10000U == 0)
+			std::cerr << "\r" << std::fixed << std::setw(6) << std::setprecision(2) << percent * 100.0f / total_percent << " %";
 		if(--size == 0) break;
 		model->updateModel(context, symbol);
 		context.push_back(symbol);

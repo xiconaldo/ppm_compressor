@@ -39,6 +39,10 @@ public:
     void reset();
     void print();
     uint size();
+    void writeBlock( uchar byte );
+    void writeBlock( uint num );
+    void readBlock( uchar& byte );
+    void readBlock( uint& num );
 };
 
 #endif // MEMORY_BUFFER_H

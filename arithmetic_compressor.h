@@ -6,6 +6,7 @@
 #include "memory_buffer.h"
 #include "probability.h"
 #include <bitset>
+#include <iomanip>
 
 
 class ArithmeticCompressor{

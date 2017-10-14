@@ -119,7 +119,7 @@ void FileBitBuffer::operator<<(const Bit bit){
 }
 
 bool FileBitBuffer::eof(){
-    return ((seek_g == seek_p) && (rd_mask > wr_mask)) || (seek_g > seek_p);
+    return ((seek_g == seek_p) && (rd_mask <= wr_mask)) || (seek_g > seek_p);
 }
 
 void FileBitBuffer::reset(){
@@ -138,4 +138,50 @@ void FileBitBuffer::print(){
 
 uint FileBitBuffer::size(){
     return (seek_p-seek_g)*8U;
+}
+
+void FileBitBuffer::writeBlock( uchar byte ){
+    
+    uchar bit_select = 0x80;
+    
+    while(bit_select != 0U){
+        if(bit_select & byte) operator<<(1);
+        else operator<<(0);
+        bit_select >>= 1;
+    }
+}
+
+void FileBitBuffer::writeBlock( uint num ){
+    uint bit_select = 0x80000000;
+    
+    while(bit_select != 0U){
+        if(bit_select & num) operator<<(1);
+        else operator<<(0);
+        bit_select >>= 1;
+    }
+}
+
+void FileBitBuffer::readBlock( uchar& byte ){
+    
+    uchar bit_select = 0x80;
+    uchar bit;
+    
+    while(bit_select != 0U){
+        operator>>(bit);
+        if(bit)
+            byte |= bit_select;
+        bit_select >>= 1;
+    }
+}
+
+void FileBitBuffer::readBlock( uint& num ){
+    uint bit_select = 0x80000000;
+    uchar bit;
+    
+    while(bit_select != 0U){
+        operator>>(bit);
+        if(bit)
+            num |= bit_select;
+        bit_select >>= 1;
+    }
 }

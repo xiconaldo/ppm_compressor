@@ -23,6 +23,8 @@ class BitBuffer{
         virtual void reset() = 0;
         virtual void print() = 0;
         virtual uint size() = 0;
+        virtual void writeBlock( uchar byte ) = 0;
+        virtual void writeBlock( uint num ) = 0;
 };
 
 #endif // BUFFER_H

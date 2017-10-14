@@ -45,6 +45,10 @@ public:
     void reset();
     void print();
     uint size();
+    void writeBlock( uchar byte );
+    void writeBlock( uint num );
+    void readBlock( uchar& byte );
+    void readBlock( uint& num );
 };
 
 #endif // FILE_BUFFER_H
