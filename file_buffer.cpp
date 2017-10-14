@@ -144,7 +144,7 @@ void FileBitBuffer::writeBlock( uchar byte ){
     
     uchar bit_select = 0x80;
     
-    while(bit_select != 0U){
+    while(bit_select != 0x00){
         if(bit_select & byte) operator<<(1);
         else operator<<(0);
         bit_select >>= 1;
@@ -154,7 +154,7 @@ void FileBitBuffer::writeBlock( uchar byte ){
 void FileBitBuffer::writeBlock( uint num ){
     uint bit_select = 0x80000000;
     
-    while(bit_select != 0U){
+    while(bit_select != 0x00000000){
         if(bit_select & num) operator<<(1);
         else operator<<(0);
         bit_select >>= 1;
@@ -165,8 +165,9 @@ void FileBitBuffer::readBlock( uchar& byte ){
     
     uchar bit_select = 0x80;
     uchar bit;
+    byte = 0x00;
     
-    while(bit_select != 0U){
+    while(bit_select != 0x00){
         operator>>(bit);
         if(bit)
             byte |= bit_select;
@@ -177,8 +178,9 @@ void FileBitBuffer::readBlock( uchar& byte ){
 void FileBitBuffer::readBlock( uint& num ){
     uint bit_select = 0x80000000;
     uchar bit;
+    num = 0x00000000;
     
-    while(bit_select != 0U){
+    while(bit_select != 0x00000000){
         operator>>(bit);
         if(bit)
             num |= bit_select;

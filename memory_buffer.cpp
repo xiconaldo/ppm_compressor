@@ -148,7 +148,7 @@ void MemoryBitBuffer::writeBlock( uchar byte ){
     
     uchar bit_select = 0x80;
     
-    while(bit_select != 0U){
+    while(bit_select != 0x00){
         if(bit_select & byte) operator<<(1);
         else operator<<(0);
         bit_select >>= 1;
@@ -169,8 +169,9 @@ void MemoryBitBuffer::readBlock( uchar& byte ){
     
     uchar bit_select = 0x80;
     uchar bit;
+    byte = 0x00;
     
-    while(bit_select != 0U){
+    while(bit_select != 0x00){
         operator>>(bit);
         if(bit)
             byte |= bit_select;
@@ -181,6 +182,7 @@ void MemoryBitBuffer::readBlock( uchar& byte ){
 void MemoryBitBuffer::readBlock( uint& num ){
     uint bit_select = 0x80000000;
     uchar bit;
+    num = 0x00000000;
     
     while(bit_select != 0U){
         operator>>(bit);
