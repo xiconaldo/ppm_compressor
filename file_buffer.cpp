@@ -5,7 +5,6 @@ FileSymbolBuffer::FileSymbolBuffer(const std::string& file_name){
     if(!source.is_open()) 
         source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-
     source.seekg (0, source.end);
     seek_p = source.tellg();
     source.seekg (0, source.beg);
