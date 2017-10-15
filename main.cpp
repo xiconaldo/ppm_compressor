@@ -4,12 +4,14 @@
 #include "file_buffer.h"
 #include "arithmetic_compressor.h"
 #include <iostream>
+#include <chrono>
 
 int main(int argc, char* argv[]){
 
 	uint in_size, out_size;
 	float RC;
 	double entropy;
+	std::chrono::high_resolution_clock::time_point start_time, end_time;
 
 	std::cerr << "\n";
 	if( argc < 4 ){
@@ -36,19 +38,27 @@ int main(int argc, char* argv[]){
 		in_size = input.size();
 		output.writeBlock(k);
 		output.writeBlock(in_size/8);
+
+		start_time = std::chrono::high_resolution_clock::now();
 		entropy = comp.encode(input, output);
+		end_time = std::chrono::high_resolution_clock::now();
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
 		out_size = output.size();
+		
 
 		RC = (float)in_size / out_size;
-		std::cerr << "\n\nInput info:" << std::endl;
-		std::cerr << "  Size = " << in_size << " bits" << std::endl;
-		std::cerr << "  Avg. length = " << 8.0f << " bits/symbol" << std::endl;
+		std::cerr << std::setprecision(3);
+		std::cerr << "\n\nTotal time: " << elapsed.count()/1000.0f << " s" << std::endl;
+		std::cerr << "\nInput info:" << std::endl;
+		std::cerr << std::setw(15) << std::left << "  Size: " << in_size/1024 << " kb" << std::endl;
+		std::cerr << std::setw(15) << std::left << "  Avg. length: " << 8.0f << " bits/symbol" << std::endl;
 		std::cerr << "\nOutput info:" << std::endl;
-		std::cerr << "  Size = " << out_size << " bits" << std::endl;
-		std::cerr << "  Avg. length = " << (float)out_size/(in_size/8) << " bits/symbol" << std::endl;
+		std::cerr << std::setw(15) << std::left << "  Size: " << out_size/1024 << " kb" << std::endl;
+		std::cerr << std::setw(15) << std::left << "  Avg. length: " << (float)out_size/(in_size/8) << " bits/symbol" << std::endl;
 		std::cerr << "\nEncode info:" << std::endl;
-		std::cerr << "  Entropy = " << entropy << " bits/symbol" << std::endl;
-		std::cerr << "  RC = " << RC << " : 1" << std::endl;
+		std::cerr << std::setw(15) << std::left << "  Entropy: " << entropy << " bits/symbol" << std::endl;
+		std::cerr << std::setw(15) << std::left << "  RC: " << RC << " : 1" << std::endl;
 	}
 	else{
 		uchar k;
@@ -61,8 +71,14 @@ int main(int argc, char* argv[]){
 		input.readBlock(num_symbols);
 		Model m{k};
 		ArithmeticCompressor comp{&m};
+
+		start_time = std::chrono::high_resolution_clock::now();
 		comp.decode(input, output, num_symbols);
-		std::cerr << "\n";
+		end_time = std::chrono::high_resolution_clock::now();
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+		std::cerr << std::setprecision(3);
+		std::cerr << "\n\nTotal time: " << elapsed.count()/1000.0f << " s" << std::endl;
 	}
 	std::cerr << "\n";
 
