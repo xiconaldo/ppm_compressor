@@ -16,8 +16,8 @@ public:
     void operator<<(const Symbol symbol);
     bool eof();
     void reset();
-    void print();
     uint size();
+    void print();
 };
 
 class MemoryBitBuffer : public BitBuffer{
@@ -35,14 +35,14 @@ public:
     MemoryBitBuffer(const std::string& bits);
     void operator>>(Bit& bit);
     void operator<<(const Bit bit);
-    bool eof();
-    void reset();
-    void print();
-    uint size();
     void writeBlock( uchar byte );
     void writeBlock( uint num );
     void readBlock( uchar& byte );
     void readBlock( uint& num );
+    bool eof();
+    void reset();
+    uint size();
+    void print();
 };
 
 #endif // MEMORY_BUFFER_H

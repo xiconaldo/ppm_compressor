@@ -13,7 +13,6 @@ void Model::updateModel(const Context& context, const Symbol& symbol){
     
     while( true ){
         node = &tree;
-        
         node = node->findPath(aux_ctx);
 
         if(!node){
@@ -37,7 +36,18 @@ void Model::updateModel(const Context& context, const Symbol& symbol){
 
 }
 
-ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbol& symbol){
+void Model::clearModel(){
+    context_minus_1.clear();
+
+    for(Symbol i = 0; i < 256; i++)
+        context_minus_1.insert(i);
+
+    tree.clear();
+}
+
+/////////////////////
+
+ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
     Tree* node, *aux_node;
@@ -61,7 +71,6 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
             high = low + aux_node->ocurrences();
             den = node->contexts();
 
-            // Exclusion mechanism
             for( auto element : exc_set )
                 if(aux_node = node->findPath(element)){
                     den -= aux_node->ocurrences();
@@ -70,7 +79,6 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
                         high -= aux_node->ocurrences();
                     }
                 }
-            //////////////////////////
 
             out.push_back( {low, high, den } );
             break;
@@ -87,18 +95,14 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
         high = low + aux_node->ocurrences();
         den = node->contexts();
 
-        // Exclusion mechanism
         for( auto element : exc_set )
             if(aux_node = node->findPath(element)){
-                den -= aux_node->ocurrences();
-                //if(element < symbol){            
-                    low -= aux_node->ocurrences();
-                    high -= aux_node->ocurrences();
-                //}
+                den -= aux_node->ocurrences();          
+                low -= aux_node->ocurrences();
+                high -= aux_node->ocurrences();
             }
 
         node->getChildrenSet(exc_set);
-        ///////////////////////
 
         out.push_back( {low, high, den } );
     
@@ -106,7 +110,7 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
         aux_ctx.pop_front();
     }
 
-    if( context_minus_1.count(symbol) ){ // context -1
+    if( context_minus_1.count(symbol) ){ 
         low = 0;
         for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
             if(*k == symbol) break;
@@ -121,12 +125,12 @@ ProbabilitiesSet Model::getSymbolProbability(const Context& context, const Symbo
 
 }
 
-ProbabilitiesSet Model::getSymbolProbability(int x, const Symbol& symbol){
+ProbabilitiesSet Model::getProbabilities(const Symbol& symbol){
 
     ProbabilitiesSet out;
     uint low, high, den;
 
-    if( context_minus_1.count(symbol) ){ // context -1
+    if( context_minus_1.count(symbol) ){ 
         low = 0;
         for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
             if(*k == symbol) break;
@@ -172,12 +176,12 @@ ProbabilityRange Model::getSingleProbability(const Context& context, const Symbo
 
 }
 
-ProbabilityRange Model::getSingleProbability(int x, const Symbol& symbol){
+ProbabilityRange Model::getSingleProbability(const Symbol& symbol){
 
     uint low, high, den;
     exc_mec.clear();
 
-    if( context_minus_1.count(symbol) ){ // context -1
+    if( context_minus_1.count(symbol) ){ 
         low = 0;
         for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
             if(*k == symbol) break;
@@ -202,7 +206,7 @@ Symbol Model::getSymbol(const Context& context, uint count){
 
 }
 
-Symbol Model::getSymbol(int x, uint count){
+Symbol Model::getSymbol(uint count){
 
     uint aux = 0;
     
@@ -214,11 +218,7 @@ Symbol Model::getSymbol(int x, uint count){
     return *context_minus_1.rbegin();
 }
 
-uchar Model::getK() const{
-    return k;
-}
-
-uint Model::getCount(const Context& context){
+uint Model::getContextSize(const Context& context){
 
     Tree* node = &tree;
     Tree* aux_node;
@@ -235,23 +235,10 @@ uint Model::getCount(const Context& context){
 
 }
 
-uint Model::getCount(int x){
-    
+uint Model::getContextSize(){
     return context_minus_1.size();
-
 }
 
-void Model::clearModel(){
-    context_minus_1.clear();
-
-    for(Symbol i = 0; i < 256; i++)
-        context_minus_1.insert(i);
-
-    tree.clear();
-}
-
-void Model::printExc(){
-    for( Symbol s : exc_mec )
-        std::cerr << (char)s << " ";
-    std::cerr << std::endl;
+uchar Model::getK() const{
+    return k;
 }

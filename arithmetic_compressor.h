@@ -12,15 +12,15 @@
 
 class ArithmeticCompressor{
 private:
-    Model* model;
+    Model model;
     static const uint ONE_QUARTER       = 0x20000000U;
     static const uint THREE_QUARTERS    = 0x60000000U;
     static const uint ONE_HALF          = 0x40000000U;
 
 public:
-    ArithmeticCompressor(Model* model);
-    double encode(SymbolBuffer& input, BitBuffer& output);
-    void decode(BitBuffer& input, SymbolBuffer& output, int size);
+    ArithmeticCompressor(uchar k);
+    void encode(SymbolBuffer& input, BitBuffer& output, double& entropy, bool clear_model = true);
+    void decode(BitBuffer& input, SymbolBuffer& output, uint size, bool clear_model = true);
 };
 
 #endif // ARITHMETIC_COMPRESSOR_H 

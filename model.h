@@ -11,7 +11,6 @@ class Model{
 
 private:
     uchar k;
-    uint alphabet_size;
     Tree tree;
     std::set<Symbol> context_minus_1;
     std::unordered_set<Symbol> exc_mec;    
@@ -19,17 +18,17 @@ private:
 public:
     Model(uchar k);
     void updateModel(const Context& context, const Symbol& symbol);
-    ProbabilitiesSet getSymbolProbability(const Context& context, const Symbol& symbol);
-    ProbabilitiesSet getSymbolProbability(int x, const Symbol& symbol);
-    Symbol getSymbol(const Context& context, uint count);
-    Symbol getSymbol(int x, uint count);
-    uchar getK() const;
-    uint getCount(const Context& context);
-    uint getCount(int x);
     void clearModel();
+    
+    ProbabilitiesSet getProbabilities(const Context& context, const Symbol& symbol);
+    ProbabilitiesSet getProbabilities(const Symbol& symbol);
     ProbabilityRange getSingleProbability(const Context& context, const Symbol& symbol);
-    ProbabilityRange getSingleProbability(int x, const Symbol& symbol);
-    void printExc();
+    ProbabilityRange getSingleProbability(const Symbol& symbol);
+    Symbol getSymbol(const Context& context, uint count);
+    Symbol getSymbol(uint count);
+    uint getContextSize(const Context& context);
+    uint getContextSize();
+    uchar getK() const;
 };
 
 #endif // MODEL_H

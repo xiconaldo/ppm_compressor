@@ -9,6 +9,12 @@
 
 int main(int argc, char* argv[]){
 
+	std::cerr << "\n";
+	if( argc < 3 ){
+		std::cerr << "Too few arguments...\n\n";
+		return 0;
+	}
+
 	uint in_size, out_size;
 	float RC;
 	uchar k;
@@ -16,46 +22,45 @@ int main(int argc, char* argv[]){
 	double entropy;
 	std::chrono::high_resolution_clock::time_point start_time, end_time;
 
-	std::cerr << "\n";
-	if( argc < 3 ){
-		std::cerr << "Too few arguments... " << std::endl;
-		return 0;
-	}
-
 	std::string compress = std::string{argv[1]};
 	std::string input_file_name = std::string{argv[2]};
 	std::string output_file_name;
 
 	if(compress == "-c"){
 
+		// Check for output file name existence
 		output_file_name = input_file_name + ".xdg";
 		if( std::ifstream{output_file_name} ){
 			std::cerr << "Output file already exists.\n\n";
 			exit(0);
 		}
 
+		// Get K value
 		if( argc < 4 ) k = 2;
 		else k = std::stoi(std::string{argv[3]});
 
+		// Initialize objects
 		FileSymbolBuffer input{input_file_name};
 		FileBitBuffer output{output_file_name};
+		ArithmeticCompressor comp{k};
 
-		Model m{k};
-		ArithmeticCompressor comp{&m};
-
+		// Write header information
 		in_size = input.size();
-		for(uint i = 0; i < 5; i++) output.writeBlock(header[i]);
+		for(uint i = 0; i < 5; i++)
+			output.writeBlock(header[i]);
 		output.writeBlock(k);
 		output.writeBlock(in_size/8);
 
+		// Compress
 		start_time = std::chrono::high_resolution_clock::now();
-		entropy = comp.encode(input, output);
+		comp.encode(input, output, entropy);
 		end_time = std::chrono::high_resolution_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-
-		out_size = output.size();
 		
+		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+		out_size = output.size();
 		RC = (float)in_size / out_size;
+
+		// Print compression statistics
 		std::cerr << std::setprecision(3);
 		std::cerr << "\n\nTotal time: " << elapsed.count()/1000.0f << " s" << std::endl;
 		std::cerr << "\nInput info:" << std::endl;
@@ -68,27 +73,30 @@ int main(int argc, char* argv[]){
 		std::cerr << std::setw(15) << std::left << "  Entropy: " << entropy << " bits/symbol" << std::endl;
 		std::cerr << std::setw(15) << std::left << "  RC: " << RC << " : 1" << std::endl;
 	}
-	else{
+	else if(compress == "-d"){
 
 		uint num_symbols;
 		uchar header_check;
 
+		// Input file name check
 		uint s = input_file_name.size();
 		if(s > 4 && input_file_name.substr( s-4 ) == ".xdg" )
 			output_file_name = input_file_name.substr(0, s-4);
 		else
 			std::cerr << "Incompatible file format. Please, input a XDG file.\n\n";
 		
+		// Output file name check
 		if( argc > 3 ) output_file_name = std::string{argv[3]};
-
 		if( std::ifstream{output_file_name} ){
 			std::cerr << "Output file already exists.\n\n";
 			exit(0);
 		}
 
+		// Create objects
 		FileBitBuffer input{input_file_name};
 		FileSymbolBuffer output{output_file_name};
 
+		// Extract header information
 		for(uint i = 0; i < 5; i++){
 			input.readBlock(header_check);
 			if(header_check != header[i]){
@@ -96,17 +104,18 @@ int main(int argc, char* argv[]){
 				exit(0);
 			}
 		}
-
 		input.readBlock(k);
 		input.readBlock(num_symbols);
-		Model m{k};
-		ArithmeticCompressor comp{&m};
 
+		ArithmeticCompressor comp{k};
+
+		// Decompress
 		start_time = std::chrono::high_resolution_clock::now();
 		comp.decode(input, output, num_symbols);
 		end_time = std::chrono::high_resolution_clock::now();
 		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 
+		// Print decompression information
 		std::cerr << std::setprecision(3);
 		std::cerr << "\n\nTotal time: " << elapsed.count()/1000.0f << " s" << std::endl;
 	}

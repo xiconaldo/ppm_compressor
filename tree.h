@@ -15,18 +15,17 @@ class Tree{
 public:
 	Tree* addPath(const Context& context);
 	Tree* addPath(const Symbol& symbol);
-	Tree* addPath(const Context& context, const Symbol& symbol);
 	Tree* findPath(const Context& context);
 	Tree* findPath(const Symbol& symbol);
-	Tree* findPath(const Context& context, const Symbol& symbol);
 	void erasePath(const Symbol& symbol);
-	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol);
+	void clear();
+
+	Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const;
+	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol) const;
+	void getChildrenSet(std::unordered_set<Symbol>& exc_set) const;
 	uint ocurrences() const;
 	uint contexts() const;
 	uint child_count() const;
-	Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol> exc_mec) const;
-	void clear();
-	void getChildrenSet(std::unordered_set<Symbol>& exc_set);
 
 private:
 	uint num_ocurrences_ = 0;

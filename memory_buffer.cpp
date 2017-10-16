@@ -1,6 +1,6 @@
 #include "memory_buffer.h"
 
-// MemorySymbolBuffer definitions
+// MemorySymbolBuffer
 
 MemorySymbolBuffer::MemorySymbolBuffer(){
 }
@@ -32,20 +32,16 @@ void MemorySymbolBuffer::reset(){
     source.clear();
 }
 
-void MemorySymbolBuffer::print(){
-    
-    for( uchar c : source){
-        std::cout << (char)c;
-    }
-}
-
 uint MemorySymbolBuffer::size(){
-    
     return source.size() * 8U;
 }
 
+void MemorySymbolBuffer::print(){
+    for( uchar c : source)
+        std::cout << (char)c;
+}
 
-//MemoryBitBuffer definitions
+//MemoryBitBuffer
 
 MemoryBitBuffer::MemoryBitBuffer(){
     wr_buffer = 0x00;
@@ -105,45 +101,6 @@ void MemoryBitBuffer::operator<<(const Bit bit){
     bit_counter++;
 }
 
-bool MemoryBitBuffer::eof(){
-    return !bit_counter;
-}
-
-void MemoryBitBuffer::reset(){
-    wr_buffer = 0x00;
-    rd_buffer = 0x00;
-    wr_mask = 0x80;
-    rd_mask = 0x80;
-    bit_counter = 0;
-    source.clear();
-}
-
-void MemoryBitBuffer::print(){
-
-    if(source.size() == 0) return;
-    uint start = 0;
-    uint end = source.size() - 1;
-    uchar aux_mask = rd_mask;
-    uint bits_remaining = bit_counter;
-
-    for( uint i = start; i <= end; i++){
-
-        while( aux_mask != 0 && bits_remaining > 0){
-            std::cout << ( (source[i] & aux_mask) ? 1 : 0);
-            bits_remaining--;
-            aux_mask >>= 1;
-        }
-
-        aux_mask = 0x80;
-
-    }
-
-}
-
-uint MemoryBitBuffer::size(){
-    return bit_counter;
-}
-
 void MemoryBitBuffer::writeBlock( uchar byte ){
     
     uchar bit_select = 0x80;
@@ -189,5 +146,41 @@ void MemoryBitBuffer::readBlock( uint& num ){
         if(bit)
             num |= bit_select;
         bit_select >>= 1;
+    }
+}
+
+bool MemoryBitBuffer::eof(){
+    return !bit_counter;
+}
+
+void MemoryBitBuffer::reset(){
+    wr_buffer = 0x00;
+    rd_buffer = 0x00;
+    wr_mask = 0x80;
+    rd_mask = 0x80;
+    bit_counter = 0;
+    source.clear();
+}
+
+uint MemoryBitBuffer::size(){
+    return bit_counter;
+}
+
+void MemoryBitBuffer::print(){
+
+    if(!source.size()) return;
+
+    uint start = 0;
+    uint end = source.size() - 1;
+    uchar aux_mask = rd_mask;
+    uint bits_remaining = bit_counter;
+
+    for( uint i = start; i <= end; i++){
+        while( aux_mask != 0 && bits_remaining > 0){
+            std::cout << ( (source[i] & aux_mask) ? 1 : 0);
+            bits_remaining--;
+            aux_mask >>= 1;
+        }
+        aux_mask = 0x80;
     }
 }
