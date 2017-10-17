@@ -71,6 +71,7 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
             high = low + aux_node->ocurrences();
             den = node->contexts();
 
+            // Exclusion mechanism
             for( auto element : exc_set )
                 if(aux_node = node->findPath(element)){
                     den -= aux_node->ocurrences();
@@ -79,6 +80,7 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
                         high -= aux_node->ocurrences();
                     }
                 }
+            // --------------------
 
             out.push_back( {low, high, den } );
             break;
@@ -95,6 +97,7 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
         high = low + aux_node->ocurrences();
         den = node->contexts();
 
+        // Exclusion mechanism
         for( auto element : exc_set )
             if(aux_node = node->findPath(element)){
                 den -= aux_node->ocurrences();          
@@ -103,6 +106,7 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
             }
 
         node->getChildrenSet(exc_set);
+        // ------------------------
 
         out.push_back( {low, high, den } );
     
@@ -158,6 +162,7 @@ ProbabilityRange Model::getSingleProbability(const Context& context, const Symbo
     high = low + aux_node->ocurrences();
     den = node->contexts();
 
+    // Exclusion mechanism
     for( auto element : exc_mec )
         if(aux_node = node->findPath(element)){
             den -= aux_node->ocurrences();
@@ -171,6 +176,7 @@ ProbabilityRange Model::getSingleProbability(const Context& context, const Symbo
         node->getChildrenSet(exc_mec);
     else
         exc_mec.clear();
+    // ----------------------
 
     return ProbabilityRange{low, high, den};
 
@@ -227,9 +233,11 @@ uint Model::getContextSize(const Context& context){
     if(!node) return 0;
     uint value = node->contexts();
 
+    // Exclusion mechanism
     for( auto element : exc_mec )
         if(aux_node = node->findPath(element))
             value -= aux_node->ocurrences();
+    // ---------------------
 
     return value;
 
