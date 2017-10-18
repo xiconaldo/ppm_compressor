@@ -2,7 +2,7 @@
 #define MODEL_H
 
 #include "definitions.h"
-#include "tree.h"
+#include "tree_list.h"
 #include "probability.h"
 #include <iostream>
 #include <set>
@@ -11,7 +11,7 @@ class Model{
 
 private:
     uchar k;
-    Tree tree;
+    TreeList tree;
     std::set<Symbol> context_minus_1;
     std::unordered_set<Symbol> exc_mec;    
 

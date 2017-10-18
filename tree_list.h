@@ -8,12 +8,13 @@
 class TreeList{
 
 public:
-    TreeList(const Symbol& symbol)
+	TreeList();
+    TreeList(const Symbol& symbol);
 	TreeList* addPath(const Context& context);
 	TreeList* addPath(const Symbol& symbol);
 	TreeList* findPath(const Context& context);
 	TreeList* findPath(const Symbol& symbol);
-	void erasePath(const Symbol& symbol);
+	void eraseEscape();
 	void clear();
 
 	Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const;
@@ -25,7 +26,8 @@ public:
     Symbol get_symbol() const;
 
 private:
-    Symbol symbol_;
+	Symbol symbol_;
+	ushort size;
 	uint num_ocurrences_ = 0;
 	uint contexts_count_ = 0;
 	std::forward_list<TreeList*> children;

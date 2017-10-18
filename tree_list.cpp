@@ -1,8 +1,12 @@
 #include "tree_list.h"
 
+// OK
+TreeList::TreeList(){
+	this->symbol_ = 0;
+}
 
 TreeList::TreeList(const Symbol& symbol){
-    this.symbol_ = symbol 
+	this->symbol_ = symbol;
 }
 
 TreeList* TreeList::addPath(const Context& context){
@@ -11,7 +15,7 @@ TreeList* TreeList::addPath(const Context& context){
 	TreeList* parent_node;
 
 	for(Symbol s : context){
-        parent_node = child_node;
+		parent_node = child_node;
 		child_node = parent_node->findChild(s);
 		if(!child_node) child_node = parent_node->addChild(s);
 	}
@@ -20,13 +24,13 @@ TreeList* TreeList::addPath(const Context& context){
 }
 
 TreeList* TreeList::addPath(const Symbol& symbol){
-    
-    contexts_count_++;
+	
+	contexts_count_++;
 
 	TreeList* node = this->findChild(symbol);
 	if(!node) node = this->addChild(symbol);
-    node->num_ocurrences_++;
-    
+	node->num_ocurrences_++;
+	
 	return node;
 }
 
@@ -47,18 +51,23 @@ TreeList* TreeList::findPath(const Symbol& symbol){
 }
 
 /*
-    Alterar !!!!!!!!!!!
+	Alterar !!!!!!!!!!!
 */
-void TreeList::erasePath(const Symbol& symbol){
-	
-	contexts_count_ -= children[symbol]->num_ocurrences_;
-	delete children[symbol];
-	children.erase(symbol);
-		
+void TreeList::eraseEscape(){
+
+	size--;
+	for( auto k : children)
+		if( k->symbol_ == ESC){
+			contexts_count_ -= k->num_ocurrences_;
+			delete k;
+			break;
+		}
+
+	children.remove(nullptr);
 }
 
 /*
-    Alterarado !!!!!!!!!!!
+	Alterarado !!!!!!!!!!!
 */
 void TreeList::clear(){
 	num_ocurrences_ = 0;
@@ -71,43 +80,43 @@ void TreeList::clear(){
 }
 
 /*
-    Alterar !!!!!!!!!!!
+	Alterar !!!!!!!!!!!
 */
 Symbol TreeList::getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const{
 	
 	uint aux = 0;
 
-	for( auto k = children.begin(); k != children.end(); k++){
-		if( !exc_mec.count(k->first) ) aux += k->second->ocurrences();
-		if( aux > count) return k->first;
+	for( auto k : children){
+		if( !exc_mec.count(k->symbol_) ) aux += k->ocurrences();
+		if( aux > count) return k->symbol_;
 	}
 
-	if( !children.empty() ) return children.rbegin()->first;
+	//if( !children.empty() ) return children.rbegin()->first;
 	return ESC;
 }
 
 /*
-    Alterarado !!!!!!!!!!!
+	Alterarado !!!!!!!!!!!
 */
 uint TreeList::getOcurrencesFromPreviousSimblings(const Symbol& symbol) const{
 	
 	uint count = 0;
-	auto k = children.begin();
 
-	for( ; k != children.end(); k++)
-        if(k->symbol_ == symbol)
-            break
-	  	count += k->num_ocurrences_;
+	for( auto k : children){
+		if(k->symbol_ == symbol) break;
+		count += k->num_ocurrences_;
+	}
 
 	return count;
 }
 
 /*
-    Alterarado !!!!!!!!!!!
+	Alterarado !!!!!!!!!!!
 */
 void TreeList::getChildrenSet(std::unordered_set<Symbol>& exc_set) const{
-	for(auto it = children.begin(); it != children.end(); it++)
-        if(it->symbol_ != ESC) exc_set.insert(it->symbol_);
+	for(auto tree : children)
+		if(tree->symbol_ != ESC)
+			exc_set.insert(tree->symbol_);
 }
 
 /////////////////
@@ -121,41 +130,41 @@ uint TreeList::contexts() const{
 }
 
 uint TreeList::child_count() const{
-	return children.size();
+	return (uint)size;
 }
 
 Symbol TreeList::get_symbol() const{
-    return symbol_;
+	return symbol_;
 }
 
 ///////////////////////
 
 
 TreeList* TreeList::addChild(const Symbol& symbol){
-    auto index = children.begin();
+	
+	auto new_tree_pointer = new TreeList{symbol};
 
-    if(children.empty()) 
-        children.push_front(TreeList(symbol));
-        return children.front(); 
+	auto it = children.before_begin();
+	auto prev = it;
 
-    for(auto it = children.begin(); it != children.end(); it++){
-        if((*it) > symbol)
-            break;
-        index = it;
-    }
+	while( ++it != children.end() ){
+		if( (*it)->symbol_ > symbol)
+			break;
+		prev = it;
+	}
 
-    if(index == children.begin())
-        children.push_front(TreeList(symbol));
-        return children.front(); 
+	children.insert_after(prev, new_tree_pointer );
+	size++;
 
-	return (children.insert_after(index, TreeList(symbol)));
+	return new_tree_pointer;
+		
 }
 
 TreeList* TreeList::findChild(const Symbol& symbol){
-	for(auto it = children.begin(); it != children.end(); it++){
-        if(it->symbol_ == symbol)
-            return it;
-    }
+	for(auto tree : children){
+		if(tree->symbol_ == symbol)
+			return tree;
+	}
 
-    return nullptr;
+	return nullptr;
 }

@@ -9,7 +9,7 @@ Model::Model(uchar k){
 void Model::updateModel(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
-    Tree* node;
+    TreeList* node;
     
     while( true ){
         node = &tree;
@@ -25,7 +25,7 @@ void Model::updateModel(const Context& context, const Symbol& symbol){
             node->addPath(symbol);
         }
 
-        if( node->child_count() == 257 ) node->erasePath(ESC);
+        if( node->child_count() == 257 ) node->eraseEscape();
 
         if(aux_ctx.empty()) break;
         aux_ctx.pop_front();
@@ -50,7 +50,7 @@ void Model::clearModel(){
 ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
-    Tree* node, *aux_node;
+    TreeList* node, *aux_node;
     ProbabilitiesSet out;
     uint low, high, den;
     std::unordered_set<Symbol> exc_set;
@@ -151,7 +151,7 @@ ProbabilitiesSet Model::getProbabilities(const Symbol& symbol){
 
 ProbabilityRange Model::getSingleProbability(const Context& context, const Symbol& symbol){
     
-    Tree* node, *aux_node;
+    TreeList* node, *aux_node;
     uint low, high, den;
 
     node = &tree;
@@ -202,7 +202,7 @@ ProbabilityRange Model::getSingleProbability(const Symbol& symbol){
 
 Symbol Model::getSymbol(const Context& context, uint count){
 
-    Tree* node;
+    TreeList* node;
     
     node = &tree;
     node = node->findPath(context);
@@ -226,8 +226,8 @@ Symbol Model::getSymbol(uint count){
 
 uint Model::getContextSize(const Context& context){
 
-    Tree* node = &tree;
-    Tree* aux_node;
+    TreeList* node = &tree;
+    TreeList* aux_node;
 
     node = node->findPath(context);
     if(!node) return 0;
