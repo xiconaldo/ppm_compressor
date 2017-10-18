@@ -1,6 +1,5 @@
 #include "tree_list.h"
 
-// OK
 TreeList::TreeList(){
 	this->symbol_ = 0;
 }
@@ -50,9 +49,6 @@ TreeList* TreeList::findPath(const Symbol& symbol){
 	return this->findChild(symbol);
 }
 
-/*
-	Alterar !!!!!!!!!!!
-*/
 void TreeList::eraseEscape(){
 
 	size--;
@@ -66,12 +62,10 @@ void TreeList::eraseEscape(){
 	children.remove(nullptr);
 }
 
-/*
-	Alterarado !!!!!!!!!!!
-*/
 void TreeList::clear(){
 	num_ocurrences_ = 0;
 	contexts_count_ = 0;
+	size = 0;
 
 	for( auto element : children ){
 		delete element;
@@ -79,9 +73,6 @@ void TreeList::clear(){
 	children.clear();
 }
 
-/*
-	Alterar !!!!!!!!!!!
-*/
 Symbol TreeList::getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const{
 	
 	uint aux = 0;
@@ -91,13 +82,9 @@ Symbol TreeList::getSymbolOnCount(uint count, const std::unordered_set<Symbol>& 
 		if( aux > count) return k->symbol_;
 	}
 
-	//if( !children.empty() ) return children.rbegin()->first;
 	return ESC;
 }
 
-/*
-	Alterarado !!!!!!!!!!!
-*/
 uint TreeList::getOcurrencesFromPreviousSimblings(const Symbol& symbol) const{
 	
 	uint count = 0;
@@ -110,16 +97,11 @@ uint TreeList::getOcurrencesFromPreviousSimblings(const Symbol& symbol) const{
 	return count;
 }
 
-/*
-	Alterarado !!!!!!!!!!!
-*/
 void TreeList::getChildrenSet(std::unordered_set<Symbol>& exc_set) const{
 	for(auto tree : children)
 		if(tree->symbol_ != ESC)
 			exc_set.insert(tree->symbol_);
 }
-
-/////////////////
 
 uint TreeList::ocurrences() const{
 	return num_ocurrences_;
@@ -132,13 +114,6 @@ uint TreeList::contexts() const{
 uint TreeList::child_count() const{
 	return (uint)size;
 }
-
-Symbol TreeList::get_symbol() const{
-	return symbol_;
-}
-
-///////////////////////
-
 
 TreeList* TreeList::addChild(const Symbol& symbol){
 	

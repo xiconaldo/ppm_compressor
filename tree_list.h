@@ -8,8 +8,6 @@
 class TreeList{
 
 public:
-	TreeList();
-    TreeList(const Symbol& symbol);
 	TreeList* addPath(const Context& context);
 	TreeList* addPath(const Symbol& symbol);
 	TreeList* findPath(const Context& context);
@@ -23,11 +21,13 @@ public:
 	uint ocurrences() const;
 	uint contexts() const;
 	uint child_count() const;
-    Symbol get_symbol() const;
+
+    TreeList();
+    TreeList(const Symbol& symbol);
 
 private:
 	Symbol symbol_;
-	ushort size;
+	ushort size = 0;
 	uint num_ocurrences_ = 0;
 	uint contexts_count_ = 0;
 	std::forward_list<TreeList*> children;
