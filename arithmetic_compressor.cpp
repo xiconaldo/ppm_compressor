@@ -57,7 +57,7 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output, double
 					}
 				}
 			}
-			
+
 			while ( low >= ONE_QUARTER && high < THREE_QUARTERS ){
 				pending_bits++;
 				high -= ONE_QUARTER;
@@ -69,15 +69,15 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output, double
 		}
 
 		if(++percent % 10000U == 0 || percent == total_percent)
-			std::cerr << "\rCompressing " << std::setw(percent*59/total_percent) << std::setfill('|') << "" 
-					  << std::setw(59-percent*59/total_percent) << std::setfill(' ') << "" 
-					  << std::fixed << std::setw(7) << std::setprecision(2) 
+			std::cerr << "\rCompressing " << std::setw(percent*59/total_percent) << std::setfill('|') << ""
+					  << std::setw(59-percent*59/total_percent) << std::setfill(' ') << ""
+					  << std::fixed << std::setw(7) << std::setprecision(2)
 					  << percent * 100.0f / total_percent << " %";
 
 		model.updateModel(context, symbol);
 		context.push_back(symbol);
 		if(context.size() > model.getK()) context.pop_front();
-		
+
 	}
 
 	if( low < ONE_QUARTER ){
@@ -97,7 +97,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, uint s
 
 	uint low = 0x00000000U;
 	uint high = 0x7FFFFFFFU;
-	uint range, value, count, aux_count;
+	uint range, value = 0U, count, aux_count;
 	uint total_percent = size;
 	uint percent = 0;
 	bool minus_1_flag = false;
@@ -127,7 +127,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, uint s
 				}
 
 				aux_count = model.getContextSize(aux_context);
-	
+
 				if( aux_count ) break;
 				if( aux_context.empty() ){
 					minus_1_flag = true;
@@ -152,7 +152,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, uint s
 
 			high =  low + range * prob.high_num - 1;
 			low =  low + range * prob.low_num;
-			
+
 			while( low >= ONE_HALF || high < ONE_HALF ) {
 				if( high < ONE_HALF){
 					low <<= 1;
@@ -162,7 +162,7 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, uint s
 					high += 1U;
 					input >> bit;
 					value += bit;
-					
+
 				}
 				else if( low >= ONE_HALF){
 					low -= ONE_HALF;
@@ -204,15 +204,15 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, uint s
 				break;
 			}
 		}
-		
+
 		output << symbol;
 
 		if(++percent % 10000U == 0 || percent == total_percent)
-			std::cerr << "\rDecompressing " << std::setw(percent*57/total_percent) << std::setfill('|') << "" 
-					  << std::setw(57-percent*57/total_percent) << std::setfill(' ') << "" 
-					  << std::fixed << std::setw(7) << std::setprecision(2) 
+			std::cerr << "\rDecompressing " << std::setw(percent*57/total_percent) << std::setfill('|') << ""
+					  << std::setw(57-percent*57/total_percent) << std::setfill(' ') << ""
+					  << std::fixed << std::setw(7) << std::setprecision(2)
 					  << percent * 100.0f / total_percent << " %";
-						
+
 		if(--size == 0) break;
 		model.updateModel(context, symbol);
 		context.push_back(symbol);

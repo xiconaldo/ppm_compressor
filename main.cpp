@@ -86,8 +86,10 @@ int main(int argc, char* argv[]){
 		uint s = input_file_name.size();
 		if(s > 4 && input_file_name.substr( s-4 ) == ".xdg" )
 			output_file_name = input_file_name.substr(0, s-4);
-		else
+		else{
 			std::cerr << "Incompatible file format. Please, input a XDG file.\n\n";
+			exit(0);
+		}
 		
 		// Output file name check
 		if( argc > 3 ) output_file_name = std::string{argv[3]};
