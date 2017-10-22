@@ -1,11 +1,10 @@
 #ifndef TREE_LIST_H
 #define TREE_LIST_H
 
-#include "definitions.h"
+#include "tree.h"
 #include <forward_list>
-#include <unordered_set>
 
-class TreeList{
+class TreeList : public Tree{
 
 public:
 	TreeList* addPath(const Context& context);

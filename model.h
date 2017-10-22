@@ -3,6 +3,7 @@
 
 #include "definitions.h"
 #include "tree_list.h"
+#include "tree_map.h"
 #include "probability.h"
 #include <iostream>
 #include <set>
@@ -11,12 +12,13 @@ class Model{
 
 private:
     uchar k;
-    TreeList tree;
+    Tree* tree;
     std::set<Symbol> context_minus_1;
     std::unordered_set<Symbol> exc_mec;    
 
 public:
-    Model(uchar k);
+    Model(uchar k, uint tree_mode = 0U);
+    ~Model();
     void updateModel(const Context& context, const Symbol& symbol);
     void clearModel();
     

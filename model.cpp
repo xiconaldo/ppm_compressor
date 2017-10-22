@@ -1,18 +1,33 @@
 #include "model.h"
 
-Model::Model(uchar k){
+Model::Model(uchar k, uint tree_mode){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
     this->k = k;
+
+    if(tree_mode == 1)
+        tree = new TreeMap;
+    else if (tree_mode == 2)
+        tree = new TreeList;
+    else{
+        if( k < 8)
+            tree = new TreeMap;
+        else
+            tree = new TreeList;
+    }
+}
+
+Model::~Model(){
+    delete tree;
 }
 
 void Model::updateModel(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
-    TreeList* node;
+    Tree* node;
     
     while( true ){
-        node = &tree;
+        node = tree;
         node = node->findPath(aux_ctx);
 
         if(!node){
@@ -42,7 +57,7 @@ void Model::clearModel(){
     for(Symbol i = 0; i < 256; i++)
         context_minus_1.insert(i);
 
-    tree.clear();
+    tree->clear();
 }
 
 /////////////////////
@@ -50,13 +65,13 @@ void Model::clearModel(){
 ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& symbol){
 
     Context aux_ctx = context;
-    TreeList* node, *aux_node;
+    Tree* node, *aux_node;
     ProbabilitiesSet out;
     uint low, high, den;
     std::unordered_set<Symbol> exc_set;
     
     while( true ){
-        node = &tree;
+        node = tree;
         
         node = node->findPath(aux_ctx);
 
@@ -151,10 +166,10 @@ ProbabilitiesSet Model::getProbabilities(const Symbol& symbol){
 
 ProbabilityRange Model::getSingleProbability(const Context& context, const Symbol& symbol){
     
-    TreeList* node, *aux_node;
+    Tree* node, *aux_node;
     uint low, high, den;
 
-    node = &tree;
+    node = tree;
     node = node->findPath(context);
     aux_node = node->findPath(symbol);
 
@@ -202,9 +217,9 @@ ProbabilityRange Model::getSingleProbability(const Symbol& symbol){
 
 Symbol Model::getSymbol(const Context& context, uint count){
 
-    TreeList* node;
+    Tree* node;
     
-    node = &tree;
+    node = tree;
     node = node->findPath(context);
 
     if(node) return node->getSymbolOnCount(count, exc_mec);
@@ -226,8 +241,8 @@ Symbol Model::getSymbol(uint count){
 
 uint Model::getContextSize(const Context& context){
 
-    TreeList* node = &tree;
-    TreeList* aux_node;
+    Tree* node = tree;
+    Tree* aux_node;
 
     node = node->findPath(context);
     if(!node) return 0;

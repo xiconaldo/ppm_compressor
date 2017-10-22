@@ -1,7 +1,7 @@
 #include "arithmetic_compressor.h"
 
-ArithmeticCompressor::ArithmeticCompressor(uchar k) :
-	model{k}
+ArithmeticCompressor::ArithmeticCompressor(uchar k, uint tree_mode) :
+	model{k, tree_mode}
 {}
 
 void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output, double& entropy, bool clear_model){

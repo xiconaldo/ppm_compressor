@@ -18,7 +18,7 @@ private:
     static const uint ONE_HALF          = 0x40000000U;
 
 public:
-    ArithmeticCompressor(uchar k);
+    ArithmeticCompressor(uchar k, uint tree_mode);
     void encode(SymbolBuffer& input, BitBuffer& output, double& entropy, bool clear_model = true);
     void decode(BitBuffer& input, SymbolBuffer& output, uint size, bool clear_model = true);
 };
