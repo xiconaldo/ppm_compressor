@@ -39,10 +39,14 @@ int main(int argc, char* argv[]){
 		if( argc < 4 ) k = 2;
 		else k = std::stoi(std::string{argv[3]});
 
+		uint tree_mode = 0;
+		if( argc > 4 && std::string{argv[4]} == "-map") tree_mode = 1;
+		else if( argc > 4 && std::string{argv[4]} == "-list") tree_mode = 2;
+
 		// Initialize objects
 		FileSymbolBuffer input{input_file_name};
 		FileBitBuffer output{output_file_name};
-		ArithmeticCompressor comp{k};
+		ArithmeticCompressor comp{k, tree_mode};
 
 		// Write header information
 		in_size = input.size();
@@ -92,6 +96,10 @@ int main(int argc, char* argv[]){
 			exit(0);
 		}
 
+		uint tree_mode = 0;
+		if( argc > 4 && std::string{argv[4]} == "-map") tree_mode = 1;
+		else if( argc > 4 && std::string{argv[4]} == "-list") tree_mode = 2;
+
 		// Create objects
 		FileBitBuffer input{input_file_name};
 		FileSymbolBuffer output{output_file_name};
@@ -107,7 +115,7 @@ int main(int argc, char* argv[]){
 		input.readBlock(k);
 		input.readBlock(num_symbols);
 
-		ArithmeticCompressor comp{k};
+		ArithmeticCompressor comp{k, tree_mode};
 
 		// Decompress
 		start_time = std::chrono::high_resolution_clock::now();

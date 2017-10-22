@@ -2,38 +2,29 @@
 #define TREE_H
 
 #include "definitions.h"
-#include <map>
 #include <unordered_set>
-
-class CompareSymbol{
-public:
-	bool operator()(const Symbol& s1, const Symbol& s2) const;
-};
 
 class Tree{
 
 public:
-	Tree* addPath(const Context& context);
-	Tree* addPath(const Symbol& symbol);
-	Tree* findPath(const Context& context);
-	Tree* findPath(const Symbol& symbol);
-	void erasePath(const Symbol& symbol);
-	void clear();
+	virtual Tree* addPath(const Context& context) = 0;
+	virtual Tree* addPath(const Symbol& symbol) = 0;
+	virtual Tree* findPath(const Context& context) = 0;
+	virtual Tree* findPath(const Symbol& symbol) = 0;
+	virtual void eraseEscape() = 0;
+	virtual void clear() = 0;
 
-	Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const;
-	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol) const;
-	void getChildrenSet(std::unordered_set<Symbol>& exc_set) const;
-	uint ocurrences() const;
-	uint contexts() const;
-	uint child_count() const;
+	virtual Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const = 0;
+	virtual uint getOcurrencesFromPreviousSimblings(const Symbol& symbol) const = 0;
+	virtual void getChildrenSet(std::unordered_set<Symbol>& exc_set) const = 0;
+	virtual uint ocurrences() const = 0;
+	virtual uint contexts() const = 0;
+	virtual uint child_count() const = 0;
 
-private:
-	uint num_ocurrences_ = 0;
-	uint contexts_count_ = 0;
-	std::map<Symbol, Tree*, CompareSymbol> children;
+// protected:
 
-	Tree* addChild(const Symbol& symbol);
-	Tree* findChild(const Symbol& symbol);
+// 	virtual Tree* addChild(const Symbol& symbol);
+// 	virtual Tree* findChild(const Symbol& symbol);
 };
 
 #endif // TREE_H
