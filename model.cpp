@@ -68,7 +68,7 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
     Tree* node, *aux_node;
     ProbabilitiesSet out;
     uint low, high, den;
-    std::unordered_set<Symbol> exc_set;
+    SymbolUSet exc_set;
     
     while( true ){
         node = tree;

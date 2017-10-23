@@ -6,15 +6,14 @@
 #include "tree_map.h"
 #include "probability.h"
 #include <iostream>
-#include <set>
 
 class Model{
 
 private:
     uchar k;
     Tree* tree;
-    std::set<Symbol> context_minus_1;
-    std::unordered_set<Symbol> exc_mec;    
+    SymbolSet context_minus_1;
+    SymbolUSet exc_mec;    
 
 public:
     Model(uchar k, uint tree_mode = 0U);

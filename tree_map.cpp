@@ -66,7 +66,7 @@ void TreeMap::clear(){
 
 /////////
 
-Symbol TreeMap::getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const{
+Symbol TreeMap::getSymbolOnCount(uint count, const SymbolUSet& exc_mec) const{
 	
 	uint aux = 0;
 
@@ -91,7 +91,7 @@ uint TreeMap::getOcurrencesFromPreviousSimblings(const Symbol& symbol) const{
 	return count;
 }
 
-void TreeMap::getChildrenSet(std::unordered_set<Symbol>& exc_set) const{
+void TreeMap::getChildrenSet(SymbolUSet& exc_set) const{
 	for(auto it = children.begin(); it != children.end(); it++)
 		if(it->first != ESC) exc_set.insert(it->first);
 }

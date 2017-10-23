@@ -73,7 +73,7 @@ void TreeList::clear(){
 	children.clear();
 }
 
-Symbol TreeList::getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const{
+Symbol TreeList::getSymbolOnCount(uint count, const SymbolUSet& exc_mec) const{
 	
 	uint aux = 0;
 
@@ -97,7 +97,7 @@ uint TreeList::getOcurrencesFromPreviousSimblings(const Symbol& symbol) const{
 	return count;
 }
 
-void TreeList::getChildrenSet(std::unordered_set<Symbol>& exc_set) const{
+void TreeList::getChildrenSet(SymbolUSet& exc_set) const{
 	for(auto tree : children)
 		if(tree->symbol_ != ESC)
 			exc_set.insert(tree->symbol_);

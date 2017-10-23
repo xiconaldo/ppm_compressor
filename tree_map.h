@@ -19,9 +19,9 @@ public:
 	void eraseEscape();
 	void clear();
 
-	Symbol getSymbolOnCount(uint count, const std::unordered_set<Symbol>& exc_mec) const;
+	Symbol getSymbolOnCount(uint count, const SymbolUSet& exc_mec) const;
 	uint getOcurrencesFromPreviousSimblings(const Symbol& symbol) const;
-	void getChildrenSet(std::unordered_set<Symbol>& exc_set) const;
+	void getChildrenSet(SymbolUSet& exc_set) const;
 	uint ocurrences() const;
 	uint contexts() const;
 	uint child_count() const;
