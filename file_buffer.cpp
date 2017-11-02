@@ -36,7 +36,7 @@ void FileSymbolBuffer::operator<<(const Symbol symbol){
 }
 
 bool FileSymbolBuffer::eof(){
-    return seek_g > seek_p;
+    return seek_g >= seek_p;
 }
 
 void FileSymbolBuffer::reset(){
