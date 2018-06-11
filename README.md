@@ -1,6 +1,6 @@
 # PPM Compressor
 
-An arithmetic compressor that uses a Pediction by Partial Matching (PPM) method to get symbol
+An arithmetic compressor that uses a Prediction by Partial Matching (PPM) method to get symbol
 probabilities.
 
 ## Using the project
