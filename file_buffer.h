@@ -6,6 +6,8 @@
 #include <iostream>
 #include <ios>
 
+enum class FileUsage { readOnly, writeOnly, readWrite};
+
 class FileSymbolBuffer : public SymbolBuffer{
     
 private:
@@ -14,7 +16,7 @@ private:
     uint seek_p;
 
 public:
-    FileSymbolBuffer(const std::string& file_name);
+    FileSymbolBuffer(const std::string& file_name, FileUsage usage);
     ~FileSymbolBuffer();
     void operator>>(Symbol& symbol);
     void operator<<(const Symbol symbol);
@@ -37,7 +39,7 @@ private:
     uint seek_p;
 
 public:
-    FileBitBuffer(const std::string& file_name);
+    FileBitBuffer(const std::string& file_name, FileUsage usage);
     ~FileBitBuffer();
     void operator>>(Bit& bit);
     void operator<<(const Bit bit);

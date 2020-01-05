@@ -69,8 +69,8 @@ void ArithmeticCompressor::encode(SymbolBuffer& input, BitBuffer& output, double
 		}
 
 		if(++percent % 10000U == 0 || percent == total_percent)
-			std::cerr << "\rCompressing " << std::setw(percent*59/total_percent) << std::setfill('|') << ""
-					  << std::setw(59-percent*59/total_percent) << std::setfill(' ') << ""
+			std::cerr << "\rCompressing " << std::setw(percent*40/total_percent) << std::setfill('|') << ""
+					  << std::setw(40-percent*40/total_percent) << std::setfill(' ') << ""
 					  << std::fixed << std::setw(7) << std::setprecision(2)
 					  << percent * 100.0f / total_percent << " %";
 
@@ -208,8 +208,8 @@ void ArithmeticCompressor::decode(BitBuffer& input, SymbolBuffer& output, uint s
 		output << symbol;
 
 		if(++percent % 10000U == 0 || percent == total_percent)
-			std::cerr << "\rDecompressing " << std::setw(percent*57/total_percent) << std::setfill('|') << ""
-					  << std::setw(57-percent*57/total_percent) << std::setfill(' ') << ""
+			std::cerr << "\rDecompressing " << std::setw(percent*38/total_percent) << std::setfill('|') << ""
+					  << std::setw(38-percent*38/total_percent) << std::setfill(' ') << ""
 					  << std::fixed << std::setw(7) << std::setprecision(2)
 					  << percent * 100.0f / total_percent << " %";
 

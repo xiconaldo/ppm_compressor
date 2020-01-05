@@ -202,16 +202,17 @@ ProbabilityRange Model::getSingleProbability(const Symbol& symbol){
     uint low, high, den;
     exc_mec.clear();
 
-    if( context_minus_1.count(symbol) ){ 
-        low = 0;
-        for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
-            if(*k == symbol) break;
-            low++;
-        }
-        high = low + 1;
-        den = context_minus_1.size();
-        return ProbabilityRange{low, high, den };
-    }
+	if( !context_minus_1.count(symbol) )
+		throw std::runtime_error{"Symbol not found in context -1"};
+
+	low = 0;
+	for( auto k = context_minus_1.begin(); k != context_minus_1.end(); k++ ){
+		if(*k == symbol) break;
+		low++;
+	}
+	high = low + 1;
+	den = context_minus_1.size();
+	return ProbabilityRange{low, high, den };
 
 }
 

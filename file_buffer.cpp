@@ -2,10 +2,21 @@
 
 // FileSymbolBuffer
 
-FileSymbolBuffer::FileSymbolBuffer(const std::string& file_name){
-    source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios::app);
-    if(!source.is_open()) 
-        source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+FileSymbolBuffer::FileSymbolBuffer(const std::string& file_name, FileUsage usage){
+
+	auto openFlags = std::ios_base::binary;
+
+	if(usage == FileUsage::readOnly || usage == FileUsage::readWrite){
+		openFlags |= std::ios_base::in;
+	}
+	else if(usage == FileUsage::writeOnly || usage == FileUsage::readWrite){
+		openFlags |= std::ios_base::out | std::ios::app;
+	}
+
+	source.open(file_name, openFlags);
+
+	if(!source.is_open()) 
+		throw std::runtime_error{"Cannot open file" + file_name};
 
     source.seekg (0, source.end);
     seek_p = source.tellg();
@@ -54,7 +65,7 @@ void FileSymbolBuffer::print(){
 
 // FileBitBuffer
 
-FileBitBuffer::FileBitBuffer(const std::string& file_name){
+FileBitBuffer::FileBitBuffer(const std::string& file_name, FileUsage usage){
 
     wr_buffer = 0x00;
     rd_buffer = 0x00;
@@ -63,10 +74,20 @@ FileBitBuffer::FileBitBuffer(const std::string& file_name){
     seek_g = 0;
     seek_p = 0;
 
-    source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
-    if(!source.is_open()) 
-        source.open( file_name, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+   auto openFlags = std::ios_base::binary;
 
+	if(usage == FileUsage::readOnly || usage == FileUsage::readWrite){
+		openFlags |= std::ios_base::in;
+	}
+	else if(usage == FileUsage::writeOnly || usage == FileUsage::readWrite){
+		openFlags |= std::ios_base::out | std::ios::app;
+	}
+
+	source.open(file_name, openFlags);
+
+	if(!source.is_open()) 
+		throw std::runtime_error{"Cannot open file" + file_name};
+		
     source.seekg (0, source.end);
     seek_p = source.tellg();
     source.seekg (0, source.beg);

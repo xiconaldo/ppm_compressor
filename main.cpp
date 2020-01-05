@@ -44,8 +44,8 @@ int main(int argc, char* argv[]){
 		else if( argc > 4 && std::string{argv[4]} == "-list") tree_mode = 2;
 
 		// Initialize objects
-		FileSymbolBuffer input{input_file_name};
-		FileBitBuffer output{output_file_name};
+		FileSymbolBuffer input{input_file_name, FileUsage::readOnly};
+		FileBitBuffer output{output_file_name, FileUsage::writeOnly};
 		ArithmeticCompressor comp{k, tree_mode};
 
 		// Write header information
@@ -103,8 +103,8 @@ int main(int argc, char* argv[]){
 		else if( argc > 4 && std::string{argv[4]} == "-list") tree_mode = 2;
 
 		// Create objects
-		FileBitBuffer input{input_file_name};
-		FileSymbolBuffer output{output_file_name};
+		FileBitBuffer input{input_file_name, FileUsage::readOnly};
+		FileSymbolBuffer output{output_file_name, FileUsage::writeOnly};
 
 		// Extract header information
 		for(uint i = 0; i < 5; i++){
