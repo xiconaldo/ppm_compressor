@@ -1,8 +1,8 @@
-#include "tree.h"
-#include "model.h"
-#include "memory_buffer.h"
-#include "file_buffer.h"
-#include "arithmetic_compressor.h"
+#include "tree.hpp"
+#include "model.hpp"
+#include "memory_buffer.hpp"
+#include "file_buffer.hpp"
+#include "arithmetic_compressor.hpp"
 #include <iostream>
 #include <chrono>
 #include <string>

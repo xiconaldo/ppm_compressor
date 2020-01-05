@@ -1,7 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#include "definitions.h"
+#include "definitions.hpp"
 
 class SymbolBuffer{
 

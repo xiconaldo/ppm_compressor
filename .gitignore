@@ -7,18 +7,10 @@
 *.o
 *.obj
 
-# Precompiled Headers
-*.gch
-*.pch
-
 # Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
@@ -27,9 +19,7 @@
 *.lib
 
 # Executables
-*.exe
-*.out
-*.app
+build/
 
 # Others
 *.json

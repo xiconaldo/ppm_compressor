@@ -1,12 +1,15 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include "definitions.h"
+#include "definitions.hpp"
 #include <unordered_set>
 
 class Tree{
 
 public:
+
+	virtual ~Tree() = 0;
+
 	virtual Tree* addPath(const Context& context) = 0;
 	virtual Tree* addPath(const Symbol& symbol) = 0;
 	virtual Tree* findPath(const Context& context) = 0;

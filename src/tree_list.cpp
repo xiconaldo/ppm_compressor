@@ -1,4 +1,4 @@
-#include "tree_list.h"
+#include "tree_list.hpp"
 
 TreeList::TreeList(){
 	this->symbol_ = 0;

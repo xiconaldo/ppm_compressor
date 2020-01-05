@@ -1,10 +1,10 @@
 #ifndef ARITHMETIC_COMPRESSOR_H
 #define ARITHMETIC_COMPRESSOR_H
 
-#include "definitions.h"
-#include "model.h"
-#include "memory_buffer.h"
-#include "probability.h"
+#include "definitions.hpp"
+#include "model.hpp"
+#include "memory_buffer.hpp"
+#include "probability.hpp"
 #include <bitset>
 #include <iomanip>
 #include <cmath>

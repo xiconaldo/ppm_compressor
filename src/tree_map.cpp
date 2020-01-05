@@ -1,4 +1,4 @@
-#include "tree_map.h"
+#include "tree_map.hpp"
 
 bool CompareSymbol::operator()(const Symbol& s1, const Symbol& s2) const{
 	return s1 < s2;

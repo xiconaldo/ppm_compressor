@@ -1,4 +1,4 @@
-#include "arithmetic_compressor.h"
+#include "arithmetic_compressor.hpp"
 
 ArithmeticCompressor::ArithmeticCompressor(uchar k, uint tree_mode) :
 	model{k, tree_mode}

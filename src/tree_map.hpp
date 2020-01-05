@@ -1,7 +1,7 @@
 #ifndef TREE_MAP_H
 #define TREE_MAP_H
 
-#include "tree.h"
+#include "tree.hpp"
 #include <map>
 
 class CompareSymbol{

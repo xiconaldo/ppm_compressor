@@ -1,7 +1,7 @@
 #ifndef TREE_LIST_H
 #define TREE_LIST_H
 
-#include "tree.h"
+#include "tree.hpp"
 #include <forward_list>
 
 class TreeList : public Tree{

@@ -1,4 +1,4 @@
-#include "model.h"
+#include "model.hpp"
 
 Model::Model(uchar k, uint tree_mode){
     for(Symbol i = 0; i < 256; i++)
@@ -81,14 +81,14 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
             continue;
         }
         
-        if( aux_node = node->findPath(symbol) ){
+        if( (aux_node = node->findPath(symbol)) ){
             low = node->getOcurrencesFromPreviousSimblings(symbol);
             high = low + aux_node->ocurrences();
             den = node->contexts();
 
             // Exclusion mechanism
             for( auto element : exc_set )
-                if(aux_node = node->findPath(element)){
+                if( (aux_node = node->findPath(element)) ){
                     den -= aux_node->ocurrences();
                     if(element < symbol){            
                         low -= aux_node->ocurrences();
@@ -114,7 +114,7 @@ ProbabilitiesSet Model::getProbabilities(const Context& context, const Symbol& s
 
         // Exclusion mechanism
         for( auto element : exc_set )
-            if(aux_node = node->findPath(element)){
+            if( (aux_node = node->findPath(element)) ){
                 den -= aux_node->ocurrences();          
                 low -= aux_node->ocurrences();
                 high -= aux_node->ocurrences();
@@ -179,7 +179,7 @@ ProbabilityRange Model::getSingleProbability(const Context& context, const Symbo
 
     // Exclusion mechanism
     for( auto element : exc_mec )
-        if(aux_node = node->findPath(element)){
+        if( (aux_node = node->findPath(element)) ){
             den -= aux_node->ocurrences();
             if(element < symbol){
                 low -= aux_node->ocurrences();
@@ -251,7 +251,7 @@ uint Model::getContextSize(const Context& context){
 
     // Exclusion mechanism
     for( auto element : exc_mec )
-        if(aux_node = node->findPath(element))
+        if( (aux_node = node->findPath(element)) )
             value -= aux_node->ocurrences();
     // ---------------------
 

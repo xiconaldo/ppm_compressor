@@ -1,10 +1,10 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "definitions.h"
-#include "tree_list.h"
-#include "tree_map.h"
-#include "probability.h"
+#include "definitions.hpp"
+#include "tree_list.hpp"
+#include "tree_map.hpp"
+#include "probability.hpp"
 #include <iostream>
 
 class Model{

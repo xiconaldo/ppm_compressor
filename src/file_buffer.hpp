@@ -1,17 +1,23 @@
-#ifndef MEMORY_BUFFER_H
-#define MEMORY_BUFFER_H
+#ifndef FILE_BUFFER_H
+#define FILE_BUFFER_H
 
-#include "buffer.h"
+#include "buffer.hpp"
+#include <fstream>
 #include <iostream>
+#include <ios>
 
-class MemorySymbolBuffer : public SymbolBuffer{
+enum class FileUsage { readOnly, writeOnly, readWrite};
+
+class FileSymbolBuffer : public SymbolBuffer{
     
 private:
-    std::deque<Symbol> source;
+    std::fstream source;
+    uint seek_g;
+    uint seek_p;
 
 public:
-    MemorySymbolBuffer();
-    MemorySymbolBuffer(const std::string& symbols);
+    FileSymbolBuffer(const std::string& file_name, FileUsage usage);
+    ~FileSymbolBuffer();
     void operator>>(Symbol& symbol);
     void operator<<(const Symbol symbol);
     bool eof();
@@ -20,19 +26,21 @@ public:
     void print();
 };
 
-class MemoryBitBuffer : public BitBuffer{
+class FileBitBuffer : public BitBuffer{
     
 private:
-    std::deque<Bit> source;
+    std::fstream source;
     uchar wr_buffer;
     uchar rd_buffer;
     uchar wr_mask;
     uchar rd_mask;
     uint bit_counter;
+    uint seek_g;
+    uint seek_p;
 
 public:
-    MemoryBitBuffer();
-    MemoryBitBuffer(const std::string& bits);
+    FileBitBuffer(const std::string& file_name, FileUsage usage);
+    ~FileBitBuffer();
     void operator>>(Bit& bit);
     void operator<<(const Bit bit);
     void writeBlock( uchar byte );
@@ -45,4 +53,4 @@ public:
     void print();
 };
 
-#endif // MEMORY_BUFFER_H
+#endif // FILE_BUFFER_H
