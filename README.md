@@ -3,7 +3,7 @@
 An arithmetic compressor that uses a Pediction by Partial Matching (PPM) method to get symbol
 probabilities.
 
-## Using the project
+## Building and running
 
 To build the project on Linux, use:
 
@@ -11,6 +11,7 @@ To build the project on Linux, use:
 $ mkdir build
 $ cd build
 $ cmake ..
+$ make compressor
 ```
 
 To compress a file, use:
@@ -32,7 +33,7 @@ The generated output file will be labeled according to the input plus the *.xdg*
 To decompress, use:
 
 ```bash
-`$ ./compressor -d input_file_name output_file_name`
+$ ./compressor -d input_file_name output_file_name
 ```
 
 The two parameters are self explanatory. The first one must end with *.xdg* as its extension 
